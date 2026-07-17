@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>redtomato — Professional Workspace Overlay</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================================================================
+       Global Reset & Light Theme
+       ============================================================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background: #f6f8fc;
+      color: #1f1f1f;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      position: relative;
+    }
+
+    /* ============================================================================
+       Gmail Sidebar & Header (Accurate Light Mockup)
+       ============================================================================ */
+    .gmail-sidebar {
+      width: 256px;
+      background: #f6f8fc;
+      padding: 16px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex-shrink: 0;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gmail-logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px 24px;
+    }
+
+    .gmail-logo-text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 22px;
+      font-weight: 500;
+      color: #5f6368;
+    }
+
+    .gmail-compose-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 24px;
+      background: #c2e7ff;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 500;
+      color: #001d35;
+      cursor: pointer;
+      width: 140px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .gmail-nav-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 8px 20px;
+      border-radius: 16px;
+      font-size: 14px;
+      color: #444746;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .gmail-nav-item.active {
+      background: #d3e3fd;
+      color: #041e49;
+      font-weight: 600;
+    }
+
+    .gmail-nav-item-count {
+      margin-left: auto;
+      font-size: 12px;
+      color: #444746;
+    }
+
+    .gmail-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gmail-top-bar {
+      height: 64px;
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      background: #f6f8fc;
+      gap: 20px;
+      flex-shrink: 0;
+    }
+
+    .gmail-search-box {
+      flex: 1;
+      max-width: 720px;
+      height: 48px;
+      background: #eaf1fb;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+    }
+
+    .gmail-search-box input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 16px;
+      color: #1f1f1f;
+    }
+
+    .gmail-inbox-view {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 24px;
+      background: #ffffff;
+      border-radius: 16px 16px 0 0;
+      border: 1px solid #e0e0e0;
+      border-bottom: none;
+      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .gmail-email-row {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid #f1f3f4;
+      font-size: 13.5px;
+      color: #3c4043;
+      cursor: pointer;
+    }
+
+    .gmail-email-row:hover {
+      box-shadow: inset 1px 0 0 #dadce0, inset -1px 0 0 #dadce0, 0 1px 2px 0 rgba(60,64,67,.3);
+    }
+
+    .gmail-email-sender {
+      width: 160px;
+      font-weight: 600;
+      color: #202124;
+    }
+
+    .gmail-email-subject {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .gmail-email-snippet {
+      color: #5f6368;
+      font-weight: 400;
+    }
+
+    .gmail-email-time {
+      width: 80px;
+      text-align: right;
+      color: #5f6368;
+      font-size: 12px;
+    }
+
+    /* ============================================================================
+       Workspace Area Container with GPU Elastic Transitions
+       ============================================================================ */
+    .workspace-area {
+      position: absolute;
+      top: 64px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 0 16px 16px 16px;
+      overflow: hidden;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(32px) scale(0.98);
+      transition: opacity 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    .workspace-area.active {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ============================================================================
+       redtomato Premium Light Glassmorphism UI
+       ============================================================================ */
+    .rt-workspace {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(20px) saturate(1.4);
+      -webkit-backdrop-filter: blur(20px) saturate(1.4);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.04);
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Header */
+    .rt-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+      border-bottom: 1px solid #f1f5f9;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .rt-brand-group {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .rt-logo-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rt-logo-svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .rt-logo {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 20px;
+      font-weight: 800;
+      color: #e11d48;
+      letter-spacing: -0.02em;
+    }
+
+    .rt-mode-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      background: #fff1f2;
+      border: 1px solid #ffe4e6;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #be123c;
+    }
+
+    .rt-mode-badge span.indicator {
+      width: 6px;
+      height: 6px;
+      background: #e11d48;
+      border-radius: 50%;
+    }
+
+    .rt-workmode-prompt {
+      flex: 1;
+      max-width: 460px;
+      margin: 0 24px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rt-prompt-label {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .rt-prompt-input-container {
+      flex: 1;
+      position: relative;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 6px 12px;
+      display: flex;
+      align-items: center;
+    }
+
+    .rt-prompt-input-container input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 12px;
+      color: #334155;
+    }
+
+    .rt-exit-btn {
+      padding: 6px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .rt-exit-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    /* Body */
+    .rt-body {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      background: #fcfcfd;
+      position: relative;
+    }
+
+    /* Left Map Panel sliding entry */
+    .rt-map-panel {
+      width: 240px;
+      border-right: 1px solid #f0f0f0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 16px;
+      gap: 16px;
+      flex-shrink: 0;
+      background: #ffffff;
+      transform: translateX(-40px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s, opacity 0.5s ease 0.05s;
+    }
+
+    .workspace-area.active .rt-map-panel {
+      transform: translateX(0);
+      opacity: 1;
+    }
+
+    .rt-panel-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .rt-map-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .rt-map-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: #334155;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .rt-map-item:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .rt-map-item.active {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #e11d48;
+      font-weight: 600;
+    }
+
+    .rt-map-count {
+      font-size: 11px;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rt-map-item.active .rt-map-count {
+      background: #ffe4e6;
+      color: #be123c;
+    }
+
+    /* Middle Canvas Panel rising entry */
+    .rt-canvas-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      padding: 20px;
+      gap: 16px;
+      transform: translateY(30px);
+      opacity: 0;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) 0.1s, opacity 0.5s ease 0.1s;
+    }
+
+    .workspace-area.active .rt-canvas-panel {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .rt-canvas-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rt-canvas-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    /* Data Table */
+    .rt-table-container {
+      flex: 1;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #ffffff;
+      overflow: auto;
+      position: relative;
+    }
+
+    .rt-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .rt-table th {
+      background: #f8fafc;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: #475569;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid #e2e8f0;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .rt-table td {
+      padding: 14px 16px;
+      border-bottom: 1px solid #f1f5f9;
+      color: #334155;
+      vertical-align: middle;
+      position: relative;
+    }
+
+    .rt-table tbody tr {
+      position: relative;
+      transition: background 0.15s;
+    }
+
+    .rt-table tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    .rt-table tbody tr.selected {
+      background: #fff5f6;
+      box-shadow: inset 2px 0 0 #e11d48;
+    }
+
+    .rt-client-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .rt-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #475569;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #e2e8f0;
+    }
+
+    .rt-avatar.pooja { background: #e0f2fe; color: #0369a1; border-color: #bae6fd; }
+    .rt-avatar.sid { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+    .rt-avatar.google { background: #fff1f2; color: #be123c; border-color: #ffe4e6; }
+    .rt-avatar.casper { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+
+    .rt-client-subtitle {
+      font-size: 11px;
+      color: #64748b;
+      font-weight: 400;
+      margin-top: 1px;
+    }
+
+    .rt-state-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+
+    .rt-state-pill.follow-up { background: #f1f5f9; color: #475569; border-color: #e2e8f0; }
+    .rt-state-pill.action-now { background: #fff1f2; color: #e11d48; border-color: #ffe4e6; }
+    .rt-state-pill.waiting { background: #eff6ff; color: #2563eb; border-color: #dbeafe; }
+    .rt-state-pill.low-priority { background: #f8fafc; color: #94a3b8; border-color: #f1f5f9; }
+
+    .rt-next-step {
+      font-weight: 500;
+      color: #0f172a;
+    }
+
+    .rt-view-details-btn {
+      color: #2563eb;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .rt-view-details-btn:hover {
+      text-decoration: underline;
+    }
+
+    .rt-alert-issue {
+      color: #d97706;
+      font-weight: 500;
+      font-size: 11px;
+      margin-left: 6px;
+      transition: opacity 0.15s;
+    }
+
+    /* ============================================================================
+       Gmail Hover Actions Overlay inside redtomato rows
+       ============================================================================ */
+    .rt-row-actions {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      padding: 4px 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      z-index: 20;
+    }
+
+    /* Hide view details text and show hover actions */
+    .rt-table tbody tr:hover .rt-view-details-btn,
+    .rt-table tbody tr:hover .rt-alert-issue {
+      opacity: 0;
+    }
+
+    .rt-table tbody tr:hover .rt-row-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .rt-action-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #444746;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rt-action-icon:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    .rt-action-icon svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .rt-table tbody tr.unread .client-name {
+      font-weight: 800;
+    }
+
+    /* ============================================================================
+       Right Sidebar Detail Panel (Crisp Light Theme)
+       ============================================================================ */
+    .rt-detail-panel {
+      width: 360px;
+      border-left: 1px solid #e2e8f0;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow-y: auto;
+      flex-shrink: 0;
+      animation: rt-slide-in 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      display: none;
+    }
+
+    @keyframes rt-slide-in {
+      from { transform: translateX(100%); }
+      to { transform: translateX(0); }
+    }
+
+    .rt-detail-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid #f1f5f9;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rt-detail-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .rt-detail-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .rt-detail-subtitle {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    .rt-detail-close-btn {
+      background: transparent;
+      border: none;
+      font-size: 18px;
+      color: #94a3b8;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .rt-detail-close-btn:hover {
+      color: #475569;
+    }
+
+    .rt-detail-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .rt-detail-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .rt-detail-label {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+    }
+
+    .rt-detail-text {
+      font-size: 13px;
+      color: #334155;
+      line-height: 1.5;
+    }
+
+    .rt-detail-alert-card {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      color: #b45309;
+    }
+
+    .rt-detail-alert-title {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rt-detail-alert-body {
+      font-size: 12px;
+      line-height: 1.4;
+      font-weight: 500;
+    }
+
+    .rt-source-card {
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .rt-source-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .rt-source-sender-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rt-source-gmail-logo {
+      width: 18px;
+      height: 18px;
+      background: #e11d48;
+      color: white;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+
+    .rt-source-sender {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
+    }
+
+    .rt-source-date {
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    .rt-source-subject {
+      font-size: 13px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .rt-source-snippet {
+      font-size: 12px;
+      color: #475569;
+      line-height: 1.5;
+    }
+
+    .rt-source-link {
+      font-size: 11px;
+      color: #2563eb;
+      font-weight: 600;
+      text-decoration: none;
+      align-self: flex-end;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .rt-source-link:hover {
+      text-decoration: underline;
+    }
+
+    .rt-detail-actions {
+      padding: 20px 24px;
+      border-top: 1px solid #f1f5f9;
+      background: #ffffff;
+      display: flex;
+      gap: 8px;
+    }
+
+    .rt-detail-btn {
+      flex: 1;
+      padding: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+    }
+
+    .rt-detail-btn.primary {
+      background: #0f172a;
+      color: white;
+      border: none;
+    }
+
+    .rt-detail-btn.primary:hover {
+      background: #1e293b;
+    }
+
+    .rt-detail-btn.secondary {
+      background: #ffffff;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .rt-detail-btn.secondary:hover {
+      background: #f8fafc;
+    }
+
+    /* Bottom Control Desk */
+    .rt-control-desk {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px 24px;
+      border-top: 1px solid #f0f0f0;
+      background: #ffffff;
+      flex-shrink: 0;
+    }
+
+    .rt-control-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .rt-control-btn {
+      padding: 6px 12px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      color: #475569;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .rt-control-btn:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+      color: #0f172a;
+    }
+
+    .rt-control-btn.active {
+      background: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+      border-color: #cbd5e1;
+    }
+
+    .rt-control-btn.accent {
+      color: #e11d48;
+      border-color: #fca5a5;
+    }
+
+    /* Ask bar */
+    .rt-ask-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 8px 16px;
+      gap: 12px;
+    }
+
+    .rt-ask-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    .rt-ask-input-wrap {
+      flex: 1;
+    }
+
+    .rt-ask-input-wrap input {
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      font-size: 13px;
+      color: #0f172a;
+    }
+
+    .rt-submit-btn {
+      width: 28px;
+      height: 28px;
+      background: #0f172a;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .rt-toast {
+      position: absolute;
+      bottom: 120px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: #10b981;
+      padding: 10px 20px;
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.2s ease;
+    }
+
+    .rt-toast.visible {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+      pointer-events: auto;
+    }
+
+    /* ============================================================================
+       Floating Trigger FAB / Small Button (with elastic morph animations)
+       ============================================================================ */
+    .rt-trigger-fab {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ff4d73 0%, #e11d48 100%);
+      box-shadow: 0 4px 16px rgba(225, 29, 72, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 9999;
+      transform: scale(1) rotate(0deg);
+      opacity: 1;
+      pointer-events: auto;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+    }
+
+    .rt-trigger-fab:hover {
+      transform: scale(1.08) rotate(15deg);
+      box-shadow: 0 6px 20px rgba(225, 29, 72, 0.55);
+    }
+
+    .rt-trigger-fab svg {
+      width: 26px;
+      height: 26px;
+      filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
+    }
+
+    /* Shrink and rotate spin away when workspace goes active */
+    body.active-workspace .rt-trigger-fab {
+      transform: scale(0) rotate(180deg);
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Mock Gmail Sidebar (Left) -->
+  <div class="gmail-sidebar" id="g-sidebar">
+    <div class="gmail-logo-area">
+      <span class="gmail-logo-text">Gmail</span>
+    </div>
+    <div class="gmail-compose-btn">Compose</div>
+    <div class="gmail-nav-item active">Inbox<span class="gmail-nav-item-count">4</span></div>
+    <div class="gmail-nav-item">Starred</div>
+    <div class="gmail-nav-item">Snoozed</div>
+    <div class="gmail-nav-item">Sent</div>
+    <div class="gmail-nav-item">Drafts</div>
+    <div class="gmail-nav-item">Purchases</div>
+    <div class="gmail-nav-item">More</div>
+  </div>
+
+  <!-- Mock Gmail Main Content Area -->
+  <div class="gmail-main" id="g-main">
+    <div class="gmail-top-bar">
+      <div class="gmail-search-box">
+        <input type="text" placeholder="Search mail" />
+      </div>
+    </div>
+
+    <!-- Gmail Standard Inbox List (Shown when redtomato is closed) -->
+    <div class="gmail-inbox-view" id="gmail-inbox-view">
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Pooja</span>
+        <span class="gmail-email-subject">Application for Designer Position - Byte... — <span class="gmail-email-snippet">Dear Anant, Good Day! Thank you for the application invite...</span></span>
+        <span class="gmail-email-time">11/11/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Sai</span>
+        <span class="gmail-email-subject">Creative Collaboration for Your AI X Fashion Projects — <span class="gmail-email-snippet">Dear Ms. Sai, I hope you're doing well. I wanted to follow up...</span></span>
+        <span class="gmail-email-time">10/28/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Google</span>
+        <span class="gmail-email-subject">Critical Security Alert for your Google Account — <span class="gmail-email-snippet">A new sign-in was detected on a device that doesn't match...</span></span>
+        <span class="gmail-email-time">11/10/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Casper</span>
+        <span class="gmail-email-subject">Freelance Video Editing Application — <span class="gmail-email-snippet">Hi Anant, here is my proposal for the video editing project...</span></span>
+        <span class="gmail-email-time">11/08/25</span>
+      </div>
+    </div>
+
+    <!-- redtomato Workspace Area (Toggle overlay) -->
+    <div class="workspace-area" id="workspace-area">
+      <div class="rt-workspace">
+        
+        <!-- Header -->
+        <div class="rt-header">
+          <div class="rt-brand-group">
+            <div class="rt-logo-container">
+              <!-- Inline Tomato SVG Brand Icon -->
+              <svg class="rt-logo-svg" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="13" r="8" fill="url(#tomatoGrad)" />
+                <path d="M12 5C12 5 11 2 9 3C9 3 11 4 12 5Z" fill="#10b981" />
+                <path d="M12 5C12 5 13 2 15 3C15 3 13 4 12 5Z" fill="#10b981" />
+                <path d="M12 5V2" stroke="#10b981" stroke-width="2" stroke-linecap="round" />
+                <defs>
+                  <linearGradient id="tomatoGrad" x1="8" y1="9" x2="16" y2="17" gradientUnits="userSpaceOnUse">
+                    <stop offset="0%" stop-color="#fb7185" />
+                    <stop offset="50%" stop-color="#e11d48" />
+                    <stop offset="100%" stop-color="#be123c" />
+                  </linearGradient>
+                </defs>
+              </svg>
+              <span class="rt-logo">redtomato</span>
+            </div>
+            <div class="rt-mode-badge important">
+              <span class="indicator"></span>
+              Work Mode: Important today
+            </div>
+          </div>
+          <div class="rt-workmode-prompt">
+            <span class="rt-prompt-label">Need a different work mode?</span>
+            <div class="rt-prompt-input-container">
+              <input type="text" value="Organise this inbox around customer success conversations." id="mode-prompt-input" />
+            </div>
+          </div>
+          <button class="rt-exit-btn" onclick="closeWorkspace()">Exit view ✕</button>
+        </div>
+
+        <!-- Body -->
+        <div class="rt-body">
+          
+          <!-- Left Map Panel -->
+          <div class="rt-map-panel">
+            <div class="rt-panel-title">Work Map (by state)</div>
+            <div class="rt-map-list">
+              <div class="rt-map-item active" id="map-all" onclick="filterState('all')">All items<span class="rt-map-count" id="count-all">8</span></div>
+              <div class="rt-map-item" id="map-action" onclick="filterState('Needs action now')">Needs action now<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-followup" onclick="filterState('Follow-up due')">Follow-up due<span class="rt-map-count">2</span></div>
+              <div class="rt-map-item" id="map-waiting" onclick="filterState('Waiting for reply')">Waiting for reply<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-review" onclick="filterState('Review or decision needed')">Review/decision<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-attachment" onclick="filterState('Attachment review')">Attachments<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-missing" onclick="filterState('Missing contact')">Missing contact<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-deadline" onclick="filterState('Deadline risk')">Deadline risk<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-low" onclick="filterState('Low priority')">Low priority<span class="rt-map-count" id="count-low">1</span></div>
+            </div>
+          </div>
+
+          <!-- Middle Canvas Panel -->
+          <div class="rt-canvas-panel" id="canvas-panel">
+            <div class="rt-canvas-header">
+              <span class="rt-canvas-title" id="canvas-title">Work Items (8)</span>
+            </div>
+
+            <div class="rt-table-container" id="report-capture-area">
+              <table class="rt-table">
+                <thead>
+                  <tr id="table-headers">
+                    <th>Lead / client</th>
+                    <th>Work type</th>
+                    <th>Current state</th>
+                    <th>Why it matters</th>
+                    <th>Next step</th>
+                    <th>Details</th>
+                  </tr>
+                </thead>
+                <tbody id="table-rows">
+                  <!-- Row 1: Pooja -->
+                  <tr id="row-pooja" data-state="Follow-up due" onclick="selectRow('pooja')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar pooja">P</div>
+                        <div>
+                          <div class="client-name">Pooja</div>
+                          <div class="rt-client-subtitle">Designer applicant</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Application review</td>
+                    <td><span class="rt-state-pill follow-up">Follow-up due</span></td>
+                    <td class="matters-text">Strong candidate for Designer role</td>
+                    <td class="rt-next-step">Review portfolio & respond</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <span class="rt-alert-issue">⚠️ 1 issue</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'pooja', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'pooja', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'pooja', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'pooja', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 2: Sai -->
+                  <tr id="row-sai" data-state="Follow-up due" onclick="selectRow('sai')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar sid">S</div>
+                        <div>
+                          <div class="client-name">Sai</div>
+                          <div class="rt-client-subtitle">AI X Fashion Projects</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Collaboration enquiry</td>
+                    <td><span class="rt-state-pill follow-up">Follow-up due</span></td>
+                    <td class="matters-text">Potential AI fashion partnership</td>
+                    <td class="rt-next-step">Schedule intro call</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'sai', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'sai', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'sai', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'sai', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 3: Google -->
+                  <tr id="row-google" data-state="Needs action now" onclick="selectRow('google')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar google">G</div>
+                        <div>
+                          <div class="client-name">Google</div>
+                          <div class="rt-client-subtitle">Security alert</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Security alert</td>
+                    <td><span class="rt-state-pill action-now">Needs action now</span></td>
+                    <td class="matters-text">Security of Google account</td>
+                    <td class="rt-next-step">Add a passkey to secure account</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'google', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'google', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'google', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'google', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 4: Casper -->
+                  <tr id="row-casper" data-state="Waiting for reply" onclick="selectRow('casper')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar casper">C</div>
+                        <div>
+                          <div class="client-name">me, Casper</div>
+                          <div class="rt-client-subtitle">Freelance application</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Freelance application</td>
+                    <td><span class="rt-state-pill waiting">Waiting for reply</span></td>
+                    <td class="matters-text">Potential video editor collaboration</td>
+                    <td class="rt-next-step">Respond to application</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <span class="rt-alert-issue">⚠️ 2 issues</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'casper', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'casper', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'casper', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'casper', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 5: Attachment issue -->
+                  <tr id="row-attachment" data-state="Attachment review" onclick="selectRow('attachment')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar sid">S</div>
+                        <div>
+                          <div class="client-name">Sina</div>
+                          <div class="rt-client-subtitle">Contractor</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Attachment review</td>
+                    <td><span class="rt-state-pill follow-up">Attachment review</span></td>
+                    <td class="matters-text">Verify tax guidelines document</td>
+                    <td class="rt-next-step">Read attached PDF</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'attachment', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'attachment', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'attachment', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'attachment', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 6: Missing contact -->
+                  <tr id="row-missing" data-state="Missing contact" onclick="selectRow('missing')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar google">G</div>
+                        <div>
+                          <div class="client-name">Unknown sender</div>
+                          <div class="rt-client-subtitle">Missing contact</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Missing contact</td>
+                    <td><span class="rt-state-pill low-priority">Missing contact</span></td>
+                    <td class="matters-text">No record found in CRM</td>
+                    <td class="rt-next-step">Link sender details</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'missing', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'missing', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'missing', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'missing', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 7: Deadline risk -->
+                  <tr id="row-deadline" data-state="Deadline risk" onclick="selectRow('deadline')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar casper">C</div>
+                        <div>
+                          <div class="client-name">Corey</div>
+                          <div class="rt-client-subtitle">Client lead</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Contract review</td>
+                    <td><span class="rt-state-pill action-now">Deadline risk</span></td>
+                    <td class="matters-text">SLA review expires in 2 hours</td>
+                    <td class="rt-next-step">Approve contract draft</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <span class="rt-alert-issue">⚠️ deadline</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'deadline', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'deadline', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'deadline', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'deadline', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 8: Low priority -->
+                  <tr id="row-low" data-state="Low priority" onclick="selectRow('low')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar google">G</div>
+                        <div>
+                          <div class="client-name">Google finish setup</div>
+                          <div class="rt-client-subtitle">Account help</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>Account setup</td>
+                    <td><span class="rt-state-pill low-priority">Low priority</span></td>
+                    <td class="matters-text">Complete setting up Google apps</td>
+                    <td class="rt-next-step">Finish configurations</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      
+                      <!-- Hover Actions Overlay -->
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'low', 'archive')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'low', 'delete')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'low', 'read')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        </div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'low', 'snooze')">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right Sidebar Details Panel -->
+          <div class="rt-detail-panel" id="detail-panel">
+            <div class="rt-detail-header">
+              <div class="rt-detail-title-group">
+                <span class="rt-detail-title" id="detail-title">Sai</span>
+                <span class="rt-detail-subtitle" id="detail-subtitle">AI X Fashion Projects</span>
+              </div>
+              <button class="rt-detail-close-btn" onclick="closeDetails()">✕</button>
+            </div>
+            
+            <div class="rt-detail-content" id="detail-content">
+              <!-- Dynamic -->
+            </div>
+
+            <div class="rt-detail-actions">
+              <button class="rt-detail-btn primary" onclick="alert('Opening original email in Gmail...')">Open in Gmail ↗</button>
+              <button class="rt-detail-btn secondary" onclick="closeDetails()">Close</button>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="rt-toast" id="toast-banner">Workspace Saved Successfully!</div>
+
+        <!-- Bottom Control Desk -->
+        <div class="rt-control-desk">
+          <div class="rt-control-row">
+            <button class="rt-control-btn" id="btn-urgency" onclick="sortByUrgency()">Group by urgency</button>
+            <button class="rt-control-btn" id="btn-client" onclick="sortByClient()">Group by client</button>
+            <button class="rt-control-btn" id="btn-missing" onclick="toggleMissingFirst()">? Show missing contact first</button>
+            <button class="rt-control-btn" id="btn-addfield" onclick="addCustomField()">+ Add custom field</button>
+            <button class="rt-control-btn" id="btn-hidelow" onclick="toggleHideLow()">👁 Hide low priority</button>
+            <button class="rt-control-btn" id="btn-focus" onclick="toggleFocusToday()">Focus on today</button>
+            <button class="rt-control-btn" onclick="saveWorkspace()">Save this workspace</button>
+            <button class="rt-control-btn" onclick="downloadWorkspacePNG()" style="background: rgba(16, 185, 129, 0.08); color: #059669; border-color: rgba(16, 185, 129, 0.25);">Download PNG 📥</button>
+            <button class="rt-control-btn accent" onclick="resetWorkspace()">Reset workspace</button>
+          </div>
+          
+          <form class="rt-ask-bar" onsubmit="handleAskSubmit(event)">
+            <div class="rt-ask-label">Ask redtomato to change this workspace</div>
+            <div class="rt-ask-input-wrap">
+              <input type="text" placeholder="Add a due date field and group cards by urgency." id="ask-input" />
+            </div>
+            <button type="submit" class="rt-submit-btn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating trigger button (FAB) -->
+  <div class="rt-trigger-fab" id="rt-fab" onclick="openWorkspace()">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="13" r="8" fill="url(#tomatoGradFab)" />
+      <path d="M12 5C12 5 11 2 9 3C9 3 11 4 12 5Z" fill="#a7f3d0" />
+      <path d="M12 5C12 5 13 2 15 3C15 3 13 4 12 5Z" fill="#a7f3d0" />
+      <path d="M12 5V2" stroke="#a7f3d0" stroke-width="2" stroke-linecap="round" />
+      <defs>
+        <linearGradient id="tomatoGradFab" x1="8" y1="9" x2="16" y2="17" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#fda4af" />
+          <stop offset="50%" stop-color="#e11d48" />
+          <stop offset="100%" stop-color="#be123c" />
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+
+  <script>
+    // Mock detailed cards database
+    const detailDb = {
+      sai: {
+        title: 'Sai',
+        subtitle: 'AI X Fashion Projects',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">This conversation matches the current work mode and is grouped as a follow-up due item.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Sai</span>
+                </div>
+                <span class="rt-source-date">10/28/25</span>
+              </div>
+              <div class="rt-source-subject">Creative Collaboration for Your AI X Fashion Projects</div>
+              <div class="rt-source-snippet">Dear Ms. Sai, I hope you're doing well. I wanted to follow up on our discussion regarding the AI fashion models...</div>
+              <a href="#" class="rt-source-link" onclick="alert('Navigating to email thread...')">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      pooja: {
+        title: 'Pooja',
+        subtitle: 'Designer applicant',
+        html: `
+          <div class="rt-detail-alert-card">
+            <span class="rt-detail-alert-title">⚠️ 1 issue to review</span>
+            <span class="rt-detail-alert-body">Truce cannot confirm the portfolio link from the visible message content.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">What needs attention</span>
+            <span class="rt-detail-text">Review portfolio and respond to keep this candidate moving forward.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Pooja</span>
+                </div>
+                <span class="rt-source-date">11/11/25</span>
+              </div>
+              <div class="rt-source-subject">Application for Designer Position - Byte...</div>
+              <div class="rt-source-snippet">Dear Anant, Good Day! Thank you for the application invite. Please find attached my updated design resume and notes...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      google: {
+        title: 'Google',
+        subtitle: 'Security alert',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">This security alert was flagged for urgent response to ensure account protection.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Google</span>
+                </div>
+                <span class="rt-source-date">11/10/25</span>
+              </div>
+              <div class="rt-source-subject">Critical Security Alert for your Google Account</div>
+              <div class="rt-source-snippet">A new sign-in was detected on a device that doesn't match your normal profile. If this wasn't you, review your security...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      casper: {
+        title: 'me, Casper',
+        subtitle: 'Freelance application',
+        html: `
+          <div class="rt-detail-alert-card">
+            <span class="rt-detail-alert-title">⚠️ 2 issues to review</span>
+            <span class="rt-detail-alert-body">1. Missing rate details in the application body.<br/>2. Video sample link is not publicly accessible.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">What needs attention</span>
+            <span class="rt-detail-text">Confirm candidate rates and request updated share permissions for the video editing samples.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Casper</span>
+                </div>
+                <span class="rt-source-date">11/08/25</span>
+              </div>
+              <div class="rt-source-subject">Freelance Video Editing Application</div>
+              <div class="rt-source-snippet">Hi Anant, here is my proposal for the video editing project. I have attached a Google Drive link containing my samples...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      attachment: {
+        title: 'Sina',
+        subtitle: 'Contractor tax guidelines',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">Tax documents must be cataloged for contractor onboarding completion.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Sina</span>
+                </div>
+                <span class="rt-source-date">11/07/25</span>
+              </div>
+              <div class="rt-source-subject">Tax Declaration Onboarding Form</div>
+              <div class="rt-source-snippet">Please find my completed tax withholding declaration form attached below in PDF format. Let me know if you need anything else...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      missing: {
+        title: 'Unknown Sender',
+        subtitle: 'CRM verification required',
+        html: `
+          <div class="rt-detail-alert-card">
+            <span class="rt-detail-alert-title">⚠️ Contact not linked</span>
+            <span class="rt-detail-alert-body">No matching record found in HubSpot. Link this sender as a lead.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">sales-partner@deals.com</span>
+                </div>
+                <span class="rt-source-date">11/06/25</span>
+              </div>
+              <div class="rt-source-subject">New partnership request details</div>
+              <div class="rt-source-snippet">Hello Team, we represent a wholesale manufacturer looking to distribute our catalog in your region...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      deadline: {
+        title: 'Corey',
+        subtitle: 'SLA deadline warning',
+        html: `
+          <div class="rt-detail-alert-card" style="background: #fff5f5; border-color: #fee2e2; color: #b91c1c;">
+            <span class="rt-detail-alert-title">🚨 Deadline alert - 2 hours remaining</span>
+            <span class="rt-detail-alert-body">Contract agreement must be signed off by 2:00 PM today to avoid penalties.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Action required</span>
+            <span class="rt-detail-text" style="font-weight: 600;">Open Gmail and sign off the document via DocuSign link immediately.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Corey</span>
+                </div>
+                <span class="rt-source-date">11/05/25</span>
+              </div>
+              <div class="rt-source-subject">URGENT: Review SLA Signature requirements</div>
+              <div class="rt-source-snippet">Final reminder that our SLA term sheet review is pending your signature. If not completed today we will hold release...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      low: {
+        title: 'Google finish setup',
+        subtitle: 'Low priority setup instructions',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">This is an automated device sync onboarding notification with low urgency.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Google Alerts</span>
+                </div>
+                <span class="rt-source-date">11/04/25</span>
+              </div>
+              <div class="rt-source-subject">Finish setting up your new pixel device</div>
+              <div class="rt-source-snippet">Welcome to your new pixel device. Complete these configuration steps to load backup storage and sync photos...</div>
+              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      }
+    };
+
+    let activeFilter = 'all';
+    let urgencySorted = false;
+    let clientSorted = false;
+    let missingFirst = false;
+    let hideLow = false;
+    let focusToday = false;
+    let customFieldAdded = false;
+
+    function openWorkspace() {
+      // Add active workspace class to body to run spring rotation FAB triggers
+      document.body.classList.add('active-workspace');
+
+      // Fade out background list view
+      document.getElementById('gmail-inbox-view').style.opacity = '0.02';
+      document.getElementById('g-sidebar').style.opacity = '0.1';
+      
+      // Make workspace active
+      const workspace = document.getElementById('workspace-area');
+      workspace.classList.add('active');
+
+      showToast("redtomato active workspace");
+    }
+
+    function closeWorkspace() {
+      // Remove active workspace class
+      document.body.classList.remove('active-workspace');
+
+      // Restore opacities
+      document.getElementById('gmail-inbox-view').style.opacity = '1';
+      document.getElementById('g-sidebar').style.opacity = '1';
+      
+      // Hide workspace
+      const workspace = document.getElementById('workspace-area');
+      workspace.classList.remove('active');
+
+      closeDetails();
+    }
+
+    function filterState(state) {
+      activeFilter = state;
+      const mapItems = document.querySelectorAll('.rt-map-item');
+      mapItems.forEach(i => i.classList.remove('active'));
+      
+      const itemMap = {
+        'all': 'map-all',
+        'Needs action now': 'map-action',
+        'Follow-up due': 'map-followup',
+        'Waiting for reply': 'map-waiting',
+        'Review or decision needed': 'map-review',
+        'Attachment review': 'map-attachment',
+        'Missing contact': 'map-missing',
+        'Deadline risk': 'map-deadline',
+        'Low priority': 'map-low'
+      };
+      
+      const activeEl = document.getElementById(itemMap[state]);
+      if (activeEl) activeEl.classList.add('active');
+
+      renderRows();
+      closeDetails();
+    }
+
+    function selectRow(id) {
+      const rows = document.querySelectorAll('.rt-table tbody tr');
+      rows.forEach(r => r.classList.remove('selected'));
+      
+      const target = document.getElementById(`row-${id}`);
+      if (target) target.classList.add('selected');
+
+      const db = detailDb[id];
+      if (db) {
+        document.getElementById('detail-title').textContent = db.title;
+        document.getElementById('detail-subtitle').textContent = db.subtitle;
+        document.getElementById('detail-content').innerHTML = db.html;
+        document.getElementById('detail-panel').style.display = 'flex';
+      }
+    }
+
+    function closeDetails() {
+      document.getElementById('detail-panel').style.display = 'none';
+      const rows = document.querySelectorAll('.rt-table tbody tr');
+      rows.forEach(r => r.classList.remove('selected'));
+    }
+
+    // Gmail Row Hover Actions Handler
+    function triggerRowAction(event, rowId, actionType) {
+      event.stopPropagation(); // prevent opening details drawer
+      const row = document.getElementById(`row-${rowId}`);
+      if (!row) return;
+
+      if (actionType === 'archive') {
+        // Slide out animation & remove
+        row.style.transition = 'all 0.3s ease';
+        row.style.transform = 'translateX(-100px)';
+        row.style.opacity = '0';
+        setTimeout(() => {
+          row.remove();
+          renderRows();
+          updateMapCounts();
+        }, 300);
+        showToast("Conversation archived");
+      } else if (actionType === 'delete') {
+        // Slide out animation & remove
+        row.style.transition = 'all 0.3s ease';
+        row.style.transform = 'scale(0.9)';
+        row.style.opacity = '0';
+        setTimeout(() => {
+          row.remove();
+          renderRows();
+          updateMapCounts();
+        }, 300);
+        showToast("Conversation moved to Trash");
+      } else if (actionType === 'read') {
+        // Toggle bold class
+        row.classList.toggle('unread');
+        const isUnread = row.classList.contains('unread');
+        showToast(isUnread ? "Marked as unread" : "Marked as read");
+      } else if (actionType === 'snooze') {
+        // Snooze animation
+        row.style.transition = 'all 0.3s ease';
+        row.style.opacity = '0.3';
+        setTimeout(() => {
+          row.style.display = 'none';
+          row.setAttribute('data-state', 'Low priority'); // Move to low priority
+          renderRows();
+          updateMapCounts();
+        }, 300);
+        showToast("Snoozed until tomorrow");
+      }
+    }
+
+    function sortByUrgency() {
+      urgencySorted = !urgencySorted;
+      clientSorted = false;
+      document.getElementById('btn-urgency').classList.toggle('active', urgencySorted);
+      document.getElementById('btn-client').classList.remove('active');
+      renderRows();
+    }
+
+    function sortByClient() {
+      clientSorted = !clientSorted;
+      urgencySorted = false;
+      document.getElementById('btn-client').classList.toggle('active', clientSorted);
+      document.getElementById('btn-urgency').classList.remove('active');
+      renderRows();
+    }
+
+    function toggleMissingFirst() {
+      missingFirst = !missingFirst;
+      document.getElementById('btn-missing').classList.toggle('active', missingFirst);
+      renderRows();
+    }
+
+    function toggleHideLow() {
+      hideLow = !hideLow;
+      document.getElementById('btn-hidelow').classList.toggle('active', hideLow);
+      renderRows();
+      updateMapCounts();
+    }
+
+    function toggleFocusToday() {
+      focusToday = !focusToday;
+      document.getElementById('btn-focus').classList.toggle('active', focusToday);
+      renderRows();
+    }
+
+    function addCustomField() {
+      if (customFieldAdded) return;
+      customFieldAdded = true;
+      document.getElementById('btn-addfield').classList.add('active');
+
+      const headerRow = document.getElementById('table-headers');
+      const th = document.createElement('th');
+      th.id = 'col-due-date';
+      th.textContent = 'Due Date';
+      headerRow.insertBefore(th, headerRow.lastElementChild);
+
+      const dueDates = {
+        pooja: 'Tomorrow',
+        sai: 'Oct 30',
+        google: 'Immediate',
+        casper: 'Nov 12',
+        attachment: 'Nov 15',
+        missing: '—',
+        deadline: 'Today',
+        low: '—'
+      };
+
+      Object.keys(dueDates).forEach(id => {
+        const row = document.getElementById(`row-${id}`);
+        if (row) {
+          const td = document.createElement('td');
+          td.className = 'due-date-cell';
+          td.style.fontWeight = '500';
+          td.style.color = dueDates[id] === 'Immediate' || dueDates[id] === 'Today' ? '#e11d48' : '#475569';
+          td.textContent = dueDates[id];
+          row.insertBefore(td, row.lastElementChild);
+        }
+      });
+
+      showToast("Added 'Due Date' column!");
+    }
+
+    function downloadWorkspacePNG() {
+      const rows = Array.from(document.querySelectorAll('#table-rows tr')).filter(r => r.style.display !== 'none');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = 1000;
+      canvas.height = 100 + (rows.length * 60) + 120;
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      ctx.fillStyle = '#be123c';
+      ctx.fillRect(0, 0, canvas.width, 70);
+      
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('redtomato — Important Today Workspace', 30, 42);
+      
+      ctx.font = '12px Inter, sans-serif';
+      ctx.fillText(new Date().toLocaleDateString() + ' Snapshot Report', 800, 42);
+      
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, 70, canvas.width, 40);
+      
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'bold 11px Inter, sans-serif';
+      ctx.fillText('LEAD / CLIENT', 30, 94);
+      ctx.fillText('WORK TYPE', 240, 94);
+      ctx.fillText('STATE', 430, 94);
+      ctx.fillText('WHY IT MATTERS', 560, 94);
+      ctx.fillText('NEXT STEP', 800, 94);
+      
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.beginPath();
+      ctx.moveTo(0, 110);
+      ctx.lineTo(canvas.width, 110);
+      ctx.stroke();
+      
+      let y = 140;
+      rows.forEach((row, index) => {
+        const clientName = row.querySelector('.client-name').textContent;
+        const clientSubtitle = row.querySelector('.rt-client-subtitle').textContent;
+        const workType = row.cells[1].textContent;
+        const state = row.cells[2].textContent;
+        const whyMatters = row.querySelector('.matters-text').textContent;
+        const nextStep = row.querySelector('.rt-next-step').textContent;
+        
+        if (index % 2 === 1) {
+          ctx.fillStyle = '#fcfcfd';
+          ctx.fillRect(0, y - 30, canvas.width, 60);
+        }
+        
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 13px Inter, sans-serif';
+        ctx.fillText(clientName, 30, y - 6);
+        ctx.fillStyle = '#64748b';
+        ctx.font = '11px Inter, sans-serif';
+        ctx.fillText(clientSubtitle, 30, y + 12);
+        
+        ctx.fillStyle = '#334155';
+        ctx.font = '13px Inter, sans-serif';
+        ctx.fillText(workType, 240, y + 3);
+        
+        let pillColor = '#e2e8f0';
+        let textColor = '#475569';
+        if (state.includes('action') || state.includes('risk') || state.includes('Deadline')) {
+          pillColor = '#ffe4e6';
+          textColor = '#be123c';
+        } else if (state.includes('reply') || state.includes('Waiting')) {
+          pillColor = '#dbeafe';
+          textColor = '#2563eb';
+        }
+        ctx.fillStyle = pillColor;
+        ctx.beginPath();
+        ctx.roundRect(430, y - 12, 110, 24, 6);
+        ctx.fill();
+        ctx.fillStyle = textColor;
+        ctx.font = 'bold 11px Inter, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(state, 485, y + 4);
+        ctx.textAlign = 'left';
+        
+        ctx.fillStyle = '#334155';
+        ctx.font = '12px Inter, sans-serif';
+        let mattersSnippet = whyMatters;
+        if (mattersSnippet.length > 30) mattersSnippet = mattersSnippet.substring(0, 27) + '...';
+        ctx.fillText(mattersSnippet, 560, y + 3);
+        
+        ctx.fillStyle = '#0f172a';
+        ctx.font = '500 12px Inter, sans-serif';
+        let stepSnippet = nextStep;
+        if (stepSnippet.length > 25) stepSnippet = stepSnippet.substring(0, 22) + '...';
+        ctx.fillText(stepSnippet, 800, y + 3);
+        
+        ctx.strokeStyle = '#f1f5f9';
+        ctx.beginPath();
+        ctx.moveTo(0, y + 30);
+        ctx.lineTo(canvas.width, y + 30);
+        ctx.stroke();
+        
+        y += 60;
+      });
+      
+      ctx.fillStyle = '#f8fafc';
+      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px Inter, sans-serif';
+      ctx.fillText('Generated natively by redtomato workspace overlay for Gmail', 30, canvas.height - 20);
+      
+      const link = document.createElement('a');
+      link.download = 'redtomato-workspace-report.png';
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      
+      showToast('Downloaded Workspace snapshot!');
+    }
+
+    function saveWorkspace() {
+      showToast("Workspace Layout Saved Successfully!");
+    }
+
+    function resetWorkspace() {
+      urgencySorted = false;
+      clientSorted = false;
+      missingFirst = false;
+      hideLow = false;
+      focusToday = false;
+
+      document.getElementById('btn-urgency').classList.remove('active');
+      document.getElementById('btn-client').classList.remove('active');
+      document.getElementById('btn-missing').classList.remove('active');
+      document.getElementById('btn-hidelow').classList.remove('active');
+      document.getElementById('btn-focus').classList.remove('active');
+      document.getElementById('ask-input').value = '';
+
+      const th = document.getElementById('col-due-date');
+      if (th) th.remove();
+
+      const cells = document.querySelectorAll('.due-date-cell');
+      cells.forEach(c => c.remove());
+      customFieldAdded = false;
+      document.getElementById('btn-addfield').classList.remove('active');
+
+      filterState('all');
+      showToast("Workspace reset to defaults");
+    }
+
+    function handleAskSubmit(e) {
+      e.preventDefault();
+      const input = document.getElementById('ask-input');
+      const cmd = input.value.trim().toLowerCase();
+      if (!cmd) return;
+
+      if (cmd.includes('pooja') || cmd.includes('designer')) {
+        selectRow('pooja');
+        showToast("AI focused on Pooja");
+      } else if (cmd.includes('urgency') || cmd.includes('urgent')) {
+        sortByUrgency();
+        showToast("Workspace grouped by urgency");
+      } else if (cmd.includes('client') || cmd.includes('name')) {
+        sortByClient();
+        showToast("Workspace sorted by client name");
+      } else if (cmd.includes('due') || cmd.includes('field')) {
+        addCustomField();
+      } else if (cmd.includes('hide') || cmd.includes('low')) {
+        toggleHideLow();
+      } else {
+        alert(`redtomato: Processing request "${input.value}"...`);
+      }
+      input.value = '';
+    }
+
+    function renderRows() {
+      const tbody = document.getElementById('table-rows');
+      const rows = Array.from(tbody.querySelectorAll('tr'));
+
+      let visibleCount = 0;
+      rows.forEach(row => {
+        const state = row.getAttribute('data-state');
+        
+        let visible = true;
+        if (activeFilter !== 'all' && state !== activeFilter) visible = false;
+        if (hideLow && state === 'Low priority') visible = false;
+        if (focusToday && state !== 'Needs action now' && state !== 'Follow-up due' && state !== 'Deadline risk') visible = false;
+
+        row.style.display = visible ? '' : 'none';
+        if (visible) visibleCount++;
+      });
+
+      document.getElementById('canvas-title').textContent = `Work Items (${visibleCount})`;
+
+      let sorted = [...rows];
+      
+      if (clientSorted) {
+        sorted.sort((a, b) => {
+          const aName = a.querySelector('.client-name').textContent;
+          const bName = b.querySelector('.client-name').textContent;
+          return aName.localeCompare(bName);
+        });
+      } else if (urgencySorted) {
+        const priorityOrder = {
+          'Deadline risk': 0,
+          'Needs action now': 1,
+          'Follow-up due': 2,
+          'Waiting for reply': 3,
+          'Review or decision needed': 4,
+          'Attachment review': 5,
+          'Missing contact': 6,
+          'Low priority': 7
+        };
+        sorted.sort((a, b) => {
+          const aOrder = priorityOrder[a.getAttribute('data-state')] ?? 99;
+          const bOrder = priorityOrder[b.getAttribute('data-state')] ?? 99;
+          return aOrder - bOrder;
+        });
+      }
+
+      if (missingFirst) {
+        sorted.sort((a, b) => {
+          const aMissing = a.getAttribute('data-state') === 'Missing contact' ? 1 : 0;
+          const bMissing = b.getAttribute('data-state') === 'Missing contact' ? 1 : 0;
+          return bMissing - aMissing;
+        });
+      }
+
+      sorted.forEach(row => tbody.appendChild(row));
+    }
+
+    function updateMapCounts() {
+      const totalRows = document.querySelectorAll('#table-rows tr').length;
+      document.getElementById('count-all').textContent = totalRows;
+    }
+  </script>
+</body>
+</html>
