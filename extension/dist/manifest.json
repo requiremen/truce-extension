@@ -9,7 +9,7 @@
     "activeTab"
   ],
   "oauth2": {
-    "client_id": "YOUR_CLIENT_ID.apps.googleusercontent.com",
+    "client_id": "557397392818-op6qbqhegq2r9r2feqsrj9r1g6ootd8f.apps.googleusercontent.com",
     "scopes": [
       "https://www.googleapis.com/auth/gmail.readonly"
     ]
