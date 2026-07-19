@@ -1,14 +1,14 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import fetch from 'node-fetch';
+import fetch, { Headers, Request, Response } from 'node-fetch';
 
 // Polyfill global fetch for Node 16 (required for Gemini SDK and Gmail API)
 if (!globalThis.fetch) {
   globalThis.fetch = fetch;
-  globalThis.Headers = fetch.Headers;
-  globalThis.Request = fetch.Request;
-  globalThis.Response = fetch.Response;
+  globalThis.Headers = Headers;
+  globalThis.Request = Request;
+  globalThis.Response = Response;
 }
 
 import { classifyRouter } from './routes/classify.js';
