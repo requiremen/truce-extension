@@ -230,16 +230,18 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 16px 24px;
+      padding: 14px 24px;
       border-bottom: 1px solid #f1f5f9;
       background: #ffffff;
       flex-shrink: 0;
+      gap: 12px;
     }
 
     .rt-brand-group {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
+      flex-shrink: 0;
     }
 
     .rt-logo-container {
@@ -261,33 +263,52 @@
       letter-spacing: -0.02em;
     }
 
-    .rt-mode-badge {
-      display: inline-flex;
+    /* ---- Work Mode Dropdown ---- */
+    .rt-mode-dropdown-group {
+      display: flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 12px;
-      background: #fff1f2;
+      position: relative;
+    }
+
+    .rt-mode-select {
+      appearance: none;
+      -webkit-appearance: none;
+      padding: 7px 32px 7px 12px;
+      background: #fff1f2 url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='%23be123c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 10px center;
       border: 1px solid #ffe4e6;
       border-radius: 8px;
       font-size: 12px;
       font-weight: 600;
       color: #be123c;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s;
     }
 
-    .rt-mode-badge span.indicator {
-      width: 6px;
-      height: 6px;
-      background: #e11d48;
-      border-radius: 50%;
+    .rt-mode-select:hover {
+      border-color: #fda4af;
     }
 
+    .rt-mode-select:focus {
+      border-color: #e11d48;
+      box-shadow: 0 0 0 2px rgba(225, 29, 72, 0.1);
+    }
+
+    /* ---- Prompt Area (Top: "Need a different work mode?") ---- */
     .rt-workmode-prompt {
       flex: 1;
-      max-width: 460px;
-      margin: 0 24px;
+      max-width: 480px;
+      margin: 0 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .rt-prompt-label-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 4px;
     }
 
     .rt-prompt-label {
@@ -297,24 +318,53 @@
       white-space: nowrap;
     }
 
-    .rt-prompt-input-container {
-      flex: 1;
-      position: relative;
+    .rt-prompt-card {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      padding: 6px 12px;
-      display: flex;
-      align-items: center;
+      border-radius: 10px;
+      padding: 8px 10px;
+      transition: border-color 0.15s;
     }
 
-    .rt-prompt-input-container input {
-      width: 100%;
+    .rt-prompt-card:focus-within {
+      border-color: #cbd5e1;
+      box-shadow: 0 0 0 2px rgba(148, 163, 184, 0.12);
+    }
+
+    .rt-prompt-card textarea {
+      flex: 1;
       background: transparent;
       border: none;
       outline: none;
       font-size: 12px;
       color: #334155;
+      line-height: 1.5;
+      resize: none;
+      min-height: 48px;
+      font-family: inherit;
+    }
+
+    .rt-prompt-submit-btn {
+      width: 30px;
+      height: 30px;
+      background: #0f172a;
+      border: none;
+      border-radius: 8px;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: background 0.15s;
+    }
+
+    .rt-prompt-submit-btn:hover {
+      background: #1e293b;
     }
 
     .rt-exit-btn {
@@ -327,11 +377,71 @@
       color: #475569;
       cursor: pointer;
       transition: all 0.2s;
+      flex-shrink: 0;
     }
 
     .rt-exit-btn:hover {
       background: #f8fafc;
       border-color: #cbd5e1;
+    }
+
+    /* ---- Info Icon (ⓘ) ---- */
+    .rt-info-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #f1f5f9;
+      color: #94a3b8;
+      font-size: 10px;
+      font-weight: 700;
+      cursor: help;
+      position: relative;
+      flex-shrink: 0;
+      border: 1px solid #e2e8f0;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .rt-info-icon:hover {
+      background: #e2e8f0;
+      color: #475569;
+    }
+
+    .rt-info-icon .rt-tooltip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: #0f172a;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 500;
+      padding: 8px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: opacity 0.15s, visibility 0.15s;
+    }
+
+    .rt-info-icon .rt-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #0f172a;
+    }
+
+    .rt-info-icon:hover .rt-tooltip {
+      visibility: visible;
+      opacity: 1;
     }
 
     /* Body */
@@ -361,6 +471,12 @@
     .workspace-area.active .rt-map-panel {
       transform: translateX(0);
       opacity: 1;
+    }
+
+    .rt-panel-title-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     .rt-panel-title {
@@ -531,6 +647,10 @@
     .rt-avatar.sid { background: #fef3c7; color: #b45309; border-color: #fde68a; }
     .rt-avatar.google { background: #fff1f2; color: #be123c; border-color: #ffe4e6; }
     .rt-avatar.casper { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+    .rt-avatar.priya { background: #fae8ff; color: #a21caf; border-color: #f0abfc; }
+    .rt-avatar.ravi { background: #fef9c3; color: #a16207; border-color: #fef08a; }
+    .rt-avatar.anita { background: #e0f2fe; color: #0284c7; border-color: #7dd3fc; }
+    .rt-avatar.deepak { background: #dcfce7; color: #16a34a; border-color: #86efac; }
 
     .rt-client-subtitle {
       font-size: 11px;
@@ -553,6 +673,7 @@
     .rt-state-pill.action-now { background: #fff1f2; color: #e11d48; border-color: #ffe4e6; }
     .rt-state-pill.waiting { background: #eff6ff; color: #2563eb; border-color: #dbeafe; }
     .rt-state-pill.low-priority { background: #f8fafc; color: #94a3b8; border-color: #f1f5f9; }
+    .rt-state-pill.review { background: #fefce8; color: #a16207; border-color: #fef08a; }
 
     .rt-next-step {
       font-weight: 500;
@@ -810,19 +931,17 @@
       line-height: 1.5;
     }
 
-    .rt-source-link {
-      font-size: 11px;
-      color: #2563eb;
-      font-weight: 600;
-      text-decoration: none;
-      align-self: flex-end;
+    .rt-source-attachment {
       display: inline-flex;
       align-items: center;
-      gap: 2px;
-    }
-
-    .rt-source-link:hover {
-      text-decoration: underline;
+      gap: 4px;
+      font-size: 11px;
+      color: #64748b;
+      background: #f1f5f9;
+      padding: 4px 8px;
+      border-radius: 6px;
+      border: 1px solid #e2e8f0;
+      width: fit-content;
     }
 
     .rt-detail-actions {
@@ -842,6 +961,11 @@
       cursor: pointer;
       text-align: center;
       transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     .rt-detail-btn.primary {
@@ -864,12 +988,14 @@
       background: #f8fafc;
     }
 
-    /* Bottom Control Desk */
+    /* ============================================================================
+       Bottom Control Desk — clean, aligned two-row layout
+       ============================================================================ */
     .rt-control-desk {
       display: flex;
       flex-direction: column;
-      gap: 12px;
-      padding: 16px 24px;
+      gap: 10px;
+      padding: 12px 24px 14px;
       border-top: 1px solid #f0f0f0;
       background: #ffffff;
       flex-shrink: 0;
@@ -877,13 +1003,12 @@
 
     .rt-control-row {
       display: flex;
-      flex-wrap: wrap;
       gap: 8px;
       align-items: center;
     }
 
     .rt-control-btn {
-      padding: 6px 12px;
+      padding: 7px 14px;
       background: #ffffff;
       border: 1px solid #e2e8f0;
       border-radius: 8px;
@@ -892,6 +1017,7 @@
       color: #475569;
       cursor: pointer;
       transition: all 0.15s;
+      white-space: nowrap;
     }
 
     .rt-control-btn:hover {
@@ -912,16 +1038,26 @@
       border-color: #fca5a5;
     }
 
+    .rt-control-spacer {
+      flex: 1;
+    }
+
     /* Ask bar */
     .rt-ask-bar {
       display: flex;
       align-items: center;
-      justify-content: space-between;
       background: #f8fafc;
       border: 1px solid #e2e8f0;
       border-radius: 12px;
-      padding: 8px 16px;
-      gap: 12px;
+      padding: 8px 12px 8px 16px;
+      gap: 10px;
+    }
+
+    .rt-ask-label-row {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
     }
 
     .rt-ask-label {
@@ -955,6 +1091,12 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .rt-submit-btn:hover {
+      background: #1e293b;
     }
 
     .rt-toast {
@@ -1031,7 +1173,7 @@
       <span class="gmail-logo-text">Gmail</span>
     </div>
     <div class="gmail-compose-btn">Compose</div>
-    <div class="gmail-nav-item active">Inbox<span class="gmail-nav-item-count">4</span></div>
+    <div class="gmail-nav-item active">Inbox<span class="gmail-nav-item-count">12</span></div>
     <div class="gmail-nav-item">Starred</div>
     <div class="gmail-nav-item">Snoozed</div>
     <div class="gmail-nav-item">Sent</div>
@@ -1070,6 +1212,46 @@
         <span class="gmail-email-subject">Freelance Video Editing Application — <span class="gmail-email-snippet">Hi Anant, here is my proposal for the video editing project...</span></span>
         <span class="gmail-email-time">11/08/25</span>
       </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Sina</span>
+        <span class="gmail-email-subject">Tax Declaration Onboarding Form — <span class="gmail-email-snippet">Please find my completed tax withholding declaration form attached...</span></span>
+        <span class="gmail-email-time">11/07/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Priya Mehta</span>
+        <span class="gmail-email-subject">Introduction and proposal from PixelCraft — <span class="gmail-email-snippet">Hi team, I came across your work and would love to discuss a potential...</span></span>
+        <span class="gmail-email-time">11/06/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Corey</span>
+        <span class="gmail-email-subject">URGENT: Review SLA Signature requirements — <span class="gmail-email-snippet">Final reminder that our SLA term sheet review is pending your signature...</span></span>
+        <span class="gmail-email-time">11/05/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Google Alerts</span>
+        <span class="gmail-email-subject">Finish setting up your new pixel device — <span class="gmail-email-snippet">Welcome to your new pixel device. Complete these configuration steps...</span></span>
+        <span class="gmail-email-time">11/04/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Ravi Kumar</span>
+        <span class="gmail-email-subject">Invoice #4821 — payment overdue — <span class="gmail-email-snippet">Hi, this is a reminder that invoice #4821 dated Oct 15 is now 14 days overdue...</span></span>
+        <span class="gmail-email-time">11/03/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Anita Roy</span>
+        <span class="gmail-email-subject">Re: Brand guidelines feedback — <span class="gmail-email-snippet">Thanks for sharing the updated brand deck. I have a few comments on slide 4...</span></span>
+        <span class="gmail-email-time">11/02/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">Deepak Joshi</span>
+        <span class="gmail-email-subject">Referral introduction — Neel from UrbanStack — <span class="gmail-email-snippet">Hey Anant, hope you're well. Neel mentioned you're looking for a backend dev...</span></span>
+        <span class="gmail-email-time">11/01/25</span>
+      </div>
+      <div class="gmail-email-row" onclick="openWorkspace()">
+        <span class="gmail-email-sender">LinkedIn</span>
+        <span class="gmail-email-subject">You have 3 new connection requests — <span class="gmail-email-snippet">See who wants to connect with you this week on LinkedIn...</span></span>
+        <span class="gmail-email-time">10/31/25</span>
+      </div>
     </div>
 
     <!-- redtomato Workspace Area (Toggle overlay) -->
@@ -1096,17 +1278,35 @@
               </svg>
               <span class="rt-logo">redtomato</span>
             </div>
-            <div class="rt-mode-badge important">
-              <span class="indicator"></span>
-              Work Mode: Important today
+
+            <!-- Work Mode Dropdown (Point 1) -->
+            <div class="rt-mode-dropdown-group">
+              <select class="rt-mode-select" id="work-mode-select" onchange="changeWorkMode(this.value)">
+                <option value="important-today">Important today</option>
+                <option value="follow-ups-only">Follow-ups only</option>
+                <option value="deadline-watch">Deadline watch</option>
+                <option value="unread-first">Unread first</option>
+              </select>
+              <!-- Info Icon 1: Work Mode -->
+              <span class="rt-info-icon">ⓘ<span class="rt-tooltip">Choose a pre-built lens to filter and organise your inbox.</span></span>
             </div>
           </div>
+
+          <!-- Top Prompt: "Need a different work mode?" (Points 2, 3, 8, 9, 13) -->
           <div class="rt-workmode-prompt">
-            <span class="rt-prompt-label">Need a different work mode?</span>
-            <div class="rt-prompt-input-container">
-              <input type="text" value="Organise this inbox around customer success conversations." id="mode-prompt-input" />
+            <div class="rt-prompt-label-row">
+              <span class="rt-prompt-label">Need a different work mode?</span>
+              <!-- Info Icon 2 -->
+              <span class="rt-info-icon">ⓘ<span class="rt-tooltip">Describe a custom starting mode in your own words.</span></span>
+            </div>
+            <div class="rt-prompt-card">
+              <textarea id="mode-prompt-input" placeholder="Organise this inbox around customer success conversations and flag any pending replies older than 48 hours."></textarea>
+              <button class="rt-prompt-submit-btn" onclick="applyCustomMode()" title="Apply custom work mode">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </button>
             </div>
           </div>
+
           <button class="rt-exit-btn" onclick="closeWorkspace()">Exit view ✕</button>
         </div>
 
@@ -1115,24 +1315,27 @@
           
           <!-- Left Map Panel -->
           <div class="rt-map-panel">
-            <div class="rt-panel-title">Work Map (by state)</div>
+            <div class="rt-panel-title-row">
+              <div class="rt-panel-title">Work Map (by state)</div>
+              <!-- Info Icon 3 -->
+              <span class="rt-info-icon">ⓘ<span class="rt-tooltip">Click a state to filter the table to only those items.</span></span>
+            </div>
             <div class="rt-map-list">
-              <div class="rt-map-item active" id="map-all" onclick="filterState('all')">All items<span class="rt-map-count" id="count-all">8</span></div>
-              <div class="rt-map-item" id="map-action" onclick="filterState('Needs action now')">Needs action now<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item active" id="map-all" onclick="filterState('all')">All items<span class="rt-map-count" id="count-all">12</span></div>
+              <div class="rt-map-item" id="map-action" onclick="filterState('Needs action now')">Needs action now<span class="rt-map-count">2</span></div>
               <div class="rt-map-item" id="map-followup" onclick="filterState('Follow-up due')">Follow-up due<span class="rt-map-count">2</span></div>
-              <div class="rt-map-item" id="map-waiting" onclick="filterState('Waiting for reply')">Waiting for reply<span class="rt-map-count">1</span></div>
-              <div class="rt-map-item" id="map-review" onclick="filterState('Review or decision needed')">Review/decision<span class="rt-map-count">1</span></div>
+              <div class="rt-map-item" id="map-waiting" onclick="filterState('Waiting for reply')">Waiting for reply<span class="rt-map-count">2</span></div>
+              <div class="rt-map-item" id="map-review" onclick="filterState('Review or decision needed')">Review/decision<span class="rt-map-count">2</span></div>
               <div class="rt-map-item" id="map-attachment" onclick="filterState('Attachment review')">Attachments<span class="rt-map-count">1</span></div>
-              <div class="rt-map-item" id="map-missing" onclick="filterState('Missing contact')">Missing contact<span class="rt-map-count">1</span></div>
               <div class="rt-map-item" id="map-deadline" onclick="filterState('Deadline risk')">Deadline risk<span class="rt-map-count">1</span></div>
-              <div class="rt-map-item" id="map-low" onclick="filterState('Low priority')">Low priority<span class="rt-map-count" id="count-low">1</span></div>
+              <div class="rt-map-item" id="map-low" onclick="filterState('Low priority')">Low priority<span class="rt-map-count" id="count-low">2</span></div>
             </div>
           </div>
 
           <!-- Middle Canvas Panel -->
           <div class="rt-canvas-panel" id="canvas-panel">
             <div class="rt-canvas-header">
-              <span class="rt-canvas-title" id="canvas-title">Work Items (8)</span>
+              <span class="rt-canvas-title" id="canvas-title">Work Items (12)</span>
             </div>
 
             <div class="rt-table-container" id="report-capture-area">
@@ -1166,21 +1369,11 @@
                     <td>
                       <span class="rt-view-details-btn">View details</span>
                       <span class="rt-alert-issue">⚠️ 1 issue</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'pooja', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'pooja', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'pooja', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'pooja', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'pooja', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'pooja', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'pooja', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'pooja', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
@@ -1202,21 +1395,11 @@
                     <td class="rt-next-step">Schedule intro call</td>
                     <td>
                       <span class="rt-view-details-btn">View details</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'sai', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'sai', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'sai', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'sai', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'sai', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'sai', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'sai', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'sai', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
@@ -1238,21 +1421,11 @@
                     <td class="rt-next-step">Add a passkey to secure account</td>
                     <td>
                       <span class="rt-view-details-btn">View details</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'google', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'google', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'google', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'google', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'google', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'google', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'google', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'google', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
@@ -1275,26 +1448,16 @@
                     <td>
                       <span class="rt-view-details-btn">View details</span>
                       <span class="rt-alert-issue">⚠️ 2 issues</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'casper', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'casper', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'casper', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'casper', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'casper', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'casper', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'casper', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'casper', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
 
-                  <!-- Row 5: Attachment issue -->
+                  <!-- Row 5: Sina — Attachment review -->
                   <tr id="row-attachment" data-state="Attachment review" onclick="selectRow('attachment')">
                     <td>
                       <div class="rt-client-cell">
@@ -1311,62 +1474,42 @@
                     <td class="rt-next-step">Read attached PDF</td>
                     <td>
                       <span class="rt-view-details-btn">View details</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'attachment', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'attachment', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'attachment', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'attachment', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'attachment', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'attachment', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'attachment', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'attachment', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
 
-                  <!-- Row 6: Missing contact -->
-                  <tr id="row-missing" data-state="Missing contact" onclick="selectRow('missing')">
+                  <!-- Row 6: Priya Mehta — Review/decision (replaces CRM row) -->
+                  <tr id="row-priya" data-state="Review or decision needed" onclick="selectRow('priya')">
                     <td>
                       <div class="rt-client-cell">
-                        <div class="rt-avatar google">G</div>
+                        <div class="rt-avatar priya">P</div>
                         <div>
-                          <div class="client-name">Unknown sender</div>
-                          <div class="rt-client-subtitle">Missing contact</div>
+                          <div class="client-name">Priya Mehta</div>
+                          <div class="rt-client-subtitle">PixelCraft — first-time sender</div>
                         </div>
                       </div>
                     </td>
-                    <td>Missing contact</td>
-                    <td><span class="rt-state-pill low-priority">Missing contact</span></td>
-                    <td class="matters-text">No record found in CRM</td>
-                    <td class="rt-next-step">Link sender details</td>
+                    <td>Inbound proposal</td>
+                    <td><span class="rt-state-pill review">Review or decision needed</span></td>
+                    <td class="matters-text">First-time sender — verify before replying</td>
+                    <td class="rt-next-step">Review sender and respond or archive</td>
                     <td>
                       <span class="rt-view-details-btn">View details</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'missing', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'missing', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'missing', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'missing', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'priya', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'priya', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'priya', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'priya', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
 
-                  <!-- Row 7: Deadline risk -->
+                  <!-- Row 7: Corey — Deadline risk -->
                   <tr id="row-deadline" data-state="Deadline risk" onclick="selectRow('deadline')">
                     <td>
                       <div class="rt-client-cell">
@@ -1384,26 +1527,16 @@
                     <td>
                       <span class="rt-view-details-btn">View details</span>
                       <span class="rt-alert-issue">⚠️ deadline</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'deadline', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'deadline', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'deadline', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-                        </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'deadline', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        </div>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'deadline', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'deadline', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'deadline', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'deadline', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
 
-                  <!-- Row 8: Low priority -->
+                  <!-- Row 8: Google finish setup — Low priority -->
                   <tr id="row-low" data-state="Low priority" onclick="selectRow('low')">
                     <td>
                       <div class="rt-client-cell">
@@ -1420,21 +1553,116 @@
                     <td class="rt-next-step">Finish configurations</td>
                     <td>
                       <span class="rt-view-details-btn">View details</span>
-                      
-                      <!-- Hover Actions Overlay -->
                       <div class="rt-row-actions" onclick="event.stopPropagation()">
-                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'low', 'archive')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg>
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'low', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'low', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'low', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'low', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 9: Ravi Kumar — Needs action now (invoice overdue) -->
+                  <tr id="row-ravi" data-state="Needs action now" onclick="selectRow('ravi')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar ravi">R</div>
+                        <div>
+                          <div class="client-name">Ravi Kumar</div>
+                          <div class="rt-client-subtitle">Vendor — accounts</div>
                         </div>
-                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'low', 'delete')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                      </div>
+                    </td>
+                    <td>Invoice follow-up</td>
+                    <td><span class="rt-state-pill action-now">Needs action now</span></td>
+                    <td class="matters-text">Invoice #4821 is 14 days overdue</td>
+                    <td class="rt-next-step">Process payment or dispute</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <span class="rt-alert-issue">⚠️ overdue</span>
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'ravi', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'ravi', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'ravi', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'ravi', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 10: Anita Roy — Review or decision needed -->
+                  <tr id="row-anita" data-state="Review or decision needed" onclick="selectRow('anita')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar anita">A</div>
+                        <div>
+                          <div class="client-name">Anita Roy</div>
+                          <div class="rt-client-subtitle">Brand consultant</div>
                         </div>
-                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'low', 'read')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                      </div>
+                    </td>
+                    <td>Brand feedback</td>
+                    <td><span class="rt-state-pill review">Review or decision needed</span></td>
+                    <td class="matters-text">Comments on updated brand deck</td>
+                    <td class="rt-next-step">Review slides and reply</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'anita', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'anita', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'anita', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'anita', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 11: Deepak Joshi — Waiting for reply -->
+                  <tr id="row-deepak" data-state="Waiting for reply" onclick="selectRow('deepak')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar deepak">D</div>
+                        <div>
+                          <div class="client-name">Deepak Joshi</div>
+                          <div class="rt-client-subtitle">Referral contact</div>
                         </div>
-                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'low', 'snooze')">
-                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      </div>
+                    </td>
+                    <td>Referral introduction</td>
+                    <td><span class="rt-state-pill waiting">Waiting for reply</span></td>
+                    <td class="matters-text">Backend dev referral from Neel</td>
+                    <td class="rt-next-step">Reply to introduction</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'deepak', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'deepak', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'deepak', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'deepak', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+                      </div>
+                    </td>
+                  </tr>
+
+                  <!-- Row 12: LinkedIn — Low priority -->
+                  <tr id="row-linkedin" data-state="Low priority" onclick="selectRow('linkedin')">
+                    <td>
+                      <div class="rt-client-cell">
+                        <div class="rt-avatar sid">L</div>
+                        <div>
+                          <div class="client-name">LinkedIn</div>
+                          <div class="rt-client-subtitle">Notification</div>
                         </div>
+                      </div>
+                    </td>
+                    <td>Social notification</td>
+                    <td><span class="rt-state-pill low-priority">Low priority</span></td>
+                    <td class="matters-text">3 new connection requests</td>
+                    <td class="rt-next-step">Review connections</td>
+                    <td>
+                      <span class="rt-view-details-btn">View details</span>
+                      <div class="rt-row-actions" onclick="event.stopPropagation()">
+                        <div class="rt-action-icon" title="Archive" onclick="triggerRowAction(event, 'linkedin', 'archive')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8v13H3V8M23 3H1v5h22z"/><path d="M10 12h4"/></svg></div>
+                        <div class="rt-action-icon" title="Delete" onclick="triggerRowAction(event, 'linkedin', 'delete')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></div>
+                        <div class="rt-action-icon" title="Mark as Read/Unread" onclick="triggerRowAction(event, 'linkedin', 'read')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></div>
+                        <div class="rt-action-icon" title="Snooze" onclick="triggerRowAction(event, 'linkedin', 'snooze')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
                       </div>
                     </td>
                   </tr>
@@ -1457,8 +1685,12 @@
               <!-- Dynamic -->
             </div>
 
+            <!-- Single primary footer action (Point 14: deduplicated "Open in Gmail") -->
             <div class="rt-detail-actions">
-              <button class="rt-detail-btn primary" onclick="alert('Opening original email in Gmail...')">Open in Gmail ↗</button>
+              <a class="rt-detail-btn primary" id="detail-gmail-link" href="https://mail.google.com/mail/u/0/#inbox/18bc3f4a9e2d1a00" target="_blank" rel="noopener">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Open in Gmail
+              </a>
               <button class="rt-detail-btn secondary" onclick="closeDetails()">Close</button>
             </div>
           </div>
@@ -1467,22 +1699,25 @@
 
         <div class="rt-toast" id="toast-banner">Workspace Saved Successfully!</div>
 
-        <!-- Bottom Control Desk -->
+        <!-- Bottom Control Desk (Point 5: no Download PNG; Point 6: clean layout) -->
         <div class="rt-control-desk">
           <div class="rt-control-row">
             <button class="rt-control-btn" id="btn-urgency" onclick="sortByUrgency()">Group by urgency</button>
             <button class="rt-control-btn" id="btn-client" onclick="sortByClient()">Group by client</button>
-            <button class="rt-control-btn" id="btn-missing" onclick="toggleMissingFirst()">? Show missing contact first</button>
             <button class="rt-control-btn" id="btn-addfield" onclick="addCustomField()">+ Add custom field</button>
             <button class="rt-control-btn" id="btn-hidelow" onclick="toggleHideLow()">👁 Hide low priority</button>
             <button class="rt-control-btn" id="btn-focus" onclick="toggleFocusToday()">Focus on today</button>
+            <div class="rt-control-spacer"></div>
             <button class="rt-control-btn" onclick="saveWorkspace()">Save this workspace</button>
-            <button class="rt-control-btn" onclick="downloadWorkspacePNG()" style="background: rgba(16, 185, 129, 0.08); color: #059669; border-color: rgba(16, 185, 129, 0.25);">Download PNG 📥</button>
             <button class="rt-control-btn accent" onclick="resetWorkspace()">Reset workspace</button>
           </div>
           
           <form class="rt-ask-bar" onsubmit="handleAskSubmit(event)">
-            <div class="rt-ask-label">Ask redtomato to change this workspace</div>
+            <div class="rt-ask-label-row">
+              <div class="rt-ask-label">Ask RedTomato to change this workspace</div>
+              <!-- Info Icon 4 -->
+              <span class="rt-info-icon">ⓘ<span class="rt-tooltip">Type a natural-language instruction to modify the current view.</span></span>
+            </div>
             <div class="rt-ask-input-wrap">
               <input type="text" placeholder="Add a due date field and group cards by urgency." id="ask-input" />
             </div>
@@ -1514,11 +1749,36 @@
   </div>
 
   <script>
-    // Mock detailed cards database
+    // =========================================================================
+    // Thread IDs for Gmail deep-linking (Point 10)
+    // =========================================================================
+    const threadIds = {
+      sai:        '18bc3f4a9e2d1a00',
+      pooja:      '18bd72c1a0e4f200',
+      google:     '18bd1e5d3c9a8b00',
+      casper:     '18bca9f2d1e73c00',
+      attachment: '18bc8a41b2c56d00',
+      priya:      '18bc6e30f4a29e00',
+      deadline:   '18bc54a9e7b31f00',
+      low:        '18bc3a18d6c40a00',
+      ravi:       '18bc1f07c5b30900',
+      anita:      '18bc0406b4a20800',
+      deepak:     '18bbe905a3910700',
+      linkedin:   '18bbce04928f0600'
+    };
+
+    function gmailLink(id) {
+      return `https://mail.google.com/mail/u/0/#inbox/${threadIds[id] || ''}`;
+    }
+
+    // =========================================================================
+    // Detail database — faithful Gmail content, attachment indicators, no CRM
+    // =========================================================================
     const detailDb = {
       sai: {
         title: 'Sai',
         subtitle: 'AI X Fashion Projects',
+        threadId: 'sai',
         html: `
           <div class="rt-detail-section">
             <span class="rt-detail-label">Why this item is here</span>
@@ -1536,7 +1796,6 @@
               </div>
               <div class="rt-source-subject">Creative Collaboration for Your AI X Fashion Projects</div>
               <div class="rt-source-snippet">Dear Ms. Sai, I hope you're doing well. I wanted to follow up on our discussion regarding the AI fashion models...</div>
-              <a href="#" class="rt-source-link" onclick="alert('Navigating to email thread...')">Open in Gmail ↗</a>
             </div>
           </div>
         `
@@ -1544,6 +1803,7 @@
       pooja: {
         title: 'Pooja',
         subtitle: 'Designer applicant',
+        threadId: 'pooja',
         html: `
           <div class="rt-detail-alert-card">
             <span class="rt-detail-alert-title">⚠️ 1 issue to review</span>
@@ -1565,7 +1825,7 @@
               </div>
               <div class="rt-source-subject">Application for Designer Position - Byte...</div>
               <div class="rt-source-snippet">Dear Anant, Good Day! Thank you for the application invite. Please find attached my updated design resume and notes...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+              <div class="rt-source-attachment">📎 Pooja_Resume_2025.pdf</div>
             </div>
           </div>
         `
@@ -1573,6 +1833,7 @@
       google: {
         title: 'Google',
         subtitle: 'Security alert',
+        threadId: 'google',
         html: `
           <div class="rt-detail-section">
             <span class="rt-detail-label">Why this item is here</span>
@@ -1590,7 +1851,6 @@
               </div>
               <div class="rt-source-subject">Critical Security Alert for your Google Account</div>
               <div class="rt-source-snippet">A new sign-in was detected on a device that doesn't match your normal profile. If this wasn't you, review your security...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
             </div>
           </div>
         `
@@ -1598,6 +1858,7 @@
       casper: {
         title: 'me, Casper',
         subtitle: 'Freelance application',
+        threadId: 'casper',
         html: `
           <div class="rt-detail-alert-card">
             <span class="rt-detail-alert-title">⚠️ 2 issues to review</span>
@@ -1619,7 +1880,7 @@
               </div>
               <div class="rt-source-subject">Freelance Video Editing Application</div>
               <div class="rt-source-snippet">Hi Anant, here is my proposal for the video editing project. I have attached a Google Drive link containing my samples...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+              <div class="rt-source-attachment">📎 Casper_Samples_GDrive_Link.txt</div>
             </div>
           </div>
         `
@@ -1627,6 +1888,7 @@
       attachment: {
         title: 'Sina',
         subtitle: 'Contractor tax guidelines',
+        threadId: 'attachment',
         html: `
           <div class="rt-detail-section">
             <span class="rt-detail-label">Why this item is here</span>
@@ -1644,18 +1906,19 @@
               </div>
               <div class="rt-source-subject">Tax Declaration Onboarding Form</div>
               <div class="rt-source-snippet">Please find my completed tax withholding declaration form attached below in PDF format. Let me know if you need anything else...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+              <div class="rt-source-attachment">📎 Tax_Declaration_Form_Sina.pdf</div>
             </div>
           </div>
         `
       },
-      missing: {
-        title: 'Unknown Sender',
-        subtitle: 'CRM verification required',
+      priya: {
+        title: 'Priya Mehta',
+        subtitle: 'PixelCraft — first-time sender',
+        threadId: 'priya',
         html: `
-          <div class="rt-detail-alert-card">
-            <span class="rt-detail-alert-title">⚠️ Contact not linked</span>
-            <span class="rt-detail-alert-body">No matching record found in HubSpot. Link this sender as a lead.</span>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">This is a first-time sender not in your contacts. Verify before responding to avoid potential spam or phishing.</span>
           </div>
           <div class="rt-detail-section">
             <span class="rt-detail-label">Source evidence</span>
@@ -1663,13 +1926,12 @@
               <div class="rt-source-header">
                 <div class="rt-source-sender-info">
                   <div class="rt-source-gmail-logo">M</div>
-                  <span class="rt-source-sender">sales-partner@deals.com</span>
+                  <span class="rt-source-sender">Priya Mehta &lt;priya@pixelcraft.design&gt;</span>
                 </div>
                 <span class="rt-source-date">11/06/25</span>
               </div>
-              <div class="rt-source-subject">New partnership request details</div>
-              <div class="rt-source-snippet">Hello Team, we represent a wholesale manufacturer looking to distribute our catalog in your region...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+              <div class="rt-source-subject">Introduction and proposal from PixelCraft</div>
+              <div class="rt-source-snippet">Hi team, I came across your work and would love to discuss a potential collaboration. We specialise in UI/UX for early-stage startups...</div>
             </div>
           </div>
         `
@@ -1677,6 +1939,7 @@
       deadline: {
         title: 'Corey',
         subtitle: 'SLA deadline warning',
+        threadId: 'deadline',
         html: `
           <div class="rt-detail-alert-card" style="background: #fff5f5; border-color: #fee2e2; color: #b91c1c;">
             <span class="rt-detail-alert-title">🚨 Deadline alert - 2 hours remaining</span>
@@ -1698,7 +1961,6 @@
               </div>
               <div class="rt-source-subject">URGENT: Review SLA Signature requirements</div>
               <div class="rt-source-snippet">Final reminder that our SLA term sheet review is pending your signature. If not completed today we will hold release...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
             </div>
           </div>
         `
@@ -1706,6 +1968,7 @@
       low: {
         title: 'Google finish setup',
         subtitle: 'Low priority setup instructions',
+        threadId: 'low',
         html: `
           <div class="rt-detail-section">
             <span class="rt-detail-label">Why this item is here</span>
@@ -1723,49 +1986,181 @@
               </div>
               <div class="rt-source-subject">Finish setting up your new pixel device</div>
               <div class="rt-source-snippet">Welcome to your new pixel device. Complete these configuration steps to load backup storage and sync photos...</div>
-              <a href="#" class="rt-source-link">Open in Gmail ↗</a>
+            </div>
+          </div>
+        `
+      },
+      ravi: {
+        title: 'Ravi Kumar',
+        subtitle: 'Invoice #4821 overdue',
+        threadId: 'ravi',
+        html: `
+          <div class="rt-detail-alert-card">
+            <span class="rt-detail-alert-title">⚠️ Payment overdue — 14 days</span>
+            <span class="rt-detail-alert-body">Invoice #4821 dated Oct 15 has not been settled. Review and process payment or raise a dispute.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Ravi Kumar &lt;ravi@acmesupply.co&gt;</span>
+                </div>
+                <span class="rt-source-date">11/03/25</span>
+              </div>
+              <div class="rt-source-subject">Invoice #4821 — payment overdue</div>
+              <div class="rt-source-snippet">Hi, this is a reminder that invoice #4821 dated Oct 15 is now 14 days overdue. Please process at your earliest convenience...</div>
+              <div class="rt-source-attachment">📎 Invoice_4821.pdf</div>
+            </div>
+          </div>
+        `
+      },
+      anita: {
+        title: 'Anita Roy',
+        subtitle: 'Brand guidelines feedback',
+        threadId: 'anita',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">Anita provided feedback on the updated brand deck. A decision is required before the deck is finalised.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Anita Roy &lt;anita@brandhouse.in&gt;</span>
+                </div>
+                <span class="rt-source-date">11/02/25</span>
+              </div>
+              <div class="rt-source-subject">Re: Brand guidelines feedback</div>
+              <div class="rt-source-snippet">Thanks for sharing the updated brand deck. I have a few comments on slide 4 regarding the colour palette choices...</div>
+            </div>
+          </div>
+        `
+      },
+      deepak: {
+        title: 'Deepak Joshi',
+        subtitle: 'Referral — backend developer',
+        threadId: 'deepak',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">Deepak introduced a backend developer referral from Neel at UrbanStack. A reply is expected.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">Deepak Joshi &lt;deepak.j@urbanstack.io&gt;</span>
+                </div>
+                <span class="rt-source-date">11/01/25</span>
+              </div>
+              <div class="rt-source-subject">Referral introduction — Neel from UrbanStack</div>
+              <div class="rt-source-snippet">Hey Anant, hope you're well. Neel mentioned you're looking for a backend dev. I'd love to chat about how I can help...</div>
+            </div>
+          </div>
+        `
+      },
+      linkedin: {
+        title: 'LinkedIn',
+        subtitle: 'Connection requests',
+        threadId: 'linkedin',
+        html: `
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Why this item is here</span>
+            <span class="rt-detail-text">Automated social notification with low urgency. No action required unless you want to review connections.</span>
+          </div>
+          <div class="rt-detail-section">
+            <span class="rt-detail-label">Source evidence</span>
+            <div class="rt-source-card">
+              <div class="rt-source-header">
+                <div class="rt-source-sender-info">
+                  <div class="rt-source-gmail-logo">M</div>
+                  <span class="rt-source-sender">LinkedIn &lt;notifications@linkedin.com&gt;</span>
+                </div>
+                <span class="rt-source-date">10/31/25</span>
+              </div>
+              <div class="rt-source-subject">You have 3 new connection requests</div>
+              <div class="rt-source-snippet">See who wants to connect with you this week on LinkedIn. You have pending invitations from 3 people in your network...</div>
             </div>
           </div>
         `
       }
     };
 
+    // =========================================================================
+    // State
+    // =========================================================================
     let activeFilter = 'all';
+    let currentWorkMode = 'important-today';
     let urgencySorted = false;
     let clientSorted = false;
-    let missingFirst = false;
     let hideLow = false;
     let focusToday = false;
     let customFieldAdded = false;
 
-    function openWorkspace() {
-      // Add active workspace class to body to run spring rotation FAB triggers
-      document.body.classList.add('active-workspace');
+    // =========================================================================
+    // Work Mode filter presets (Point 7)
+    // =========================================================================
+    const modeFilters = {
+      'important-today': ['Needs action now', 'Follow-up due', 'Deadline risk', 'Waiting for reply', 'Review or decision needed', 'Attachment review'],
+      'follow-ups-only': ['Follow-up due'],
+      'deadline-watch': ['Deadline risk', 'Needs action now'],
+      'unread-first': null // null means show all, just sort unread first
+    };
 
-      // Fade out background list view
+    // =========================================================================
+    // Core functions
+    // =========================================================================
+    function openWorkspace() {
+      document.body.classList.add('active-workspace');
       document.getElementById('gmail-inbox-view').style.opacity = '0.02';
       document.getElementById('g-sidebar').style.opacity = '0.1';
       
-      // Make workspace active
       const workspace = document.getElementById('workspace-area');
       workspace.classList.add('active');
 
+      // Apply default mode filter on open
+      applyModeFilter();
       showToast("redtomato active workspace");
     }
 
     function closeWorkspace() {
-      // Remove active workspace class
       document.body.classList.remove('active-workspace');
-
-      // Restore opacities
       document.getElementById('gmail-inbox-view').style.opacity = '1';
       document.getElementById('g-sidebar').style.opacity = '1';
       
-      // Hide workspace
       const workspace = document.getElementById('workspace-area');
       workspace.classList.remove('active');
-
       closeDetails();
+    }
+
+    function changeWorkMode(mode) {
+      currentWorkMode = mode;
+      activeFilter = 'all';
+      // Reset map selection to "All items"
+      const mapItems = document.querySelectorAll('.rt-map-item');
+      mapItems.forEach(i => i.classList.remove('active'));
+      document.getElementById('map-all').classList.add('active');
+
+      applyModeFilter();
+      showToast(`Work mode: ${document.getElementById('work-mode-select').selectedOptions[0].text}`);
+    }
+
+    function applyModeFilter() {
+      renderRows();
+    }
+
+    function applyCustomMode() {
+      const input = document.getElementById('mode-prompt-input');
+      const text = input.value.trim();
+      if (!text) return;
+      showToast("Custom work mode applied");
     }
 
     function filterState(state) {
@@ -1780,7 +2175,6 @@
         'Waiting for reply': 'map-waiting',
         'Review or decision needed': 'map-review',
         'Attachment review': 'map-attachment',
-        'Missing contact': 'map-missing',
         'Deadline risk': 'map-deadline',
         'Low priority': 'map-low'
       };
@@ -1804,6 +2198,8 @@
         document.getElementById('detail-title').textContent = db.title;
         document.getElementById('detail-subtitle').textContent = db.subtitle;
         document.getElementById('detail-content').innerHTML = db.html;
+        // Update footer Gmail deep-link
+        document.getElementById('detail-gmail-link').href = gmailLink(db.threadId);
         document.getElementById('detail-panel').style.display = 'flex';
       }
     }
@@ -1816,12 +2212,11 @@
 
     // Gmail Row Hover Actions Handler
     function triggerRowAction(event, rowId, actionType) {
-      event.stopPropagation(); // prevent opening details drawer
+      event.stopPropagation();
       const row = document.getElementById(`row-${rowId}`);
       if (!row) return;
 
       if (actionType === 'archive') {
-        // Slide out animation & remove
         row.style.transition = 'all 0.3s ease';
         row.style.transform = 'translateX(-100px)';
         row.style.opacity = '0';
@@ -1832,7 +2227,6 @@
         }, 300);
         showToast("Conversation archived");
       } else if (actionType === 'delete') {
-        // Slide out animation & remove
         row.style.transition = 'all 0.3s ease';
         row.style.transform = 'scale(0.9)';
         row.style.opacity = '0';
@@ -1843,17 +2237,15 @@
         }, 300);
         showToast("Conversation moved to Trash");
       } else if (actionType === 'read') {
-        // Toggle bold class
         row.classList.toggle('unread');
         const isUnread = row.classList.contains('unread');
         showToast(isUnread ? "Marked as unread" : "Marked as read");
       } else if (actionType === 'snooze') {
-        // Snooze animation
         row.style.transition = 'all 0.3s ease';
         row.style.opacity = '0.3';
         setTimeout(() => {
           row.style.display = 'none';
-          row.setAttribute('data-state', 'Low priority'); // Move to low priority
+          row.setAttribute('data-state', 'Low priority');
           renderRows();
           updateMapCounts();
         }, 300);
@@ -1874,12 +2266,6 @@
       urgencySorted = false;
       document.getElementById('btn-client').classList.toggle('active', clientSorted);
       document.getElementById('btn-urgency').classList.remove('active');
-      renderRows();
-    }
-
-    function toggleMissingFirst() {
-      missingFirst = !missingFirst;
-      document.getElementById('btn-missing').classList.toggle('active', missingFirst);
       renderRows();
     }
 
@@ -1913,9 +2299,13 @@
         google: 'Immediate',
         casper: 'Nov 12',
         attachment: 'Nov 15',
-        missing: '—',
+        priya: 'Nov 9',
         deadline: 'Today',
-        low: '—'
+        low: '—',
+        ravi: 'Immediate',
+        anita: 'Nov 5',
+        deepak: 'Nov 4',
+        linkedin: '—'
       };
 
       Object.keys(dueDates).forEach(id => {
@@ -1933,123 +2323,6 @@
       showToast("Added 'Due Date' column!");
     }
 
-    function downloadWorkspacePNG() {
-      const rows = Array.from(document.querySelectorAll('#table-rows tr')).filter(r => r.style.display !== 'none');
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      
-      canvas.width = 1000;
-      canvas.height = 100 + (rows.length * 60) + 120;
-      
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.fillStyle = '#be123c';
-      ctx.fillRect(0, 0, canvas.width, 70);
-      
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 22px "Plus Jakarta Sans", sans-serif';
-      ctx.fillText('redtomato — Important Today Workspace', 30, 42);
-      
-      ctx.font = '12px Inter, sans-serif';
-      ctx.fillText(new Date().toLocaleDateString() + ' Snapshot Report', 800, 42);
-      
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(0, 70, canvas.width, 40);
-      
-      ctx.fillStyle = '#64748b';
-      ctx.font = 'bold 11px Inter, sans-serif';
-      ctx.fillText('LEAD / CLIENT', 30, 94);
-      ctx.fillText('WORK TYPE', 240, 94);
-      ctx.fillText('STATE', 430, 94);
-      ctx.fillText('WHY IT MATTERS', 560, 94);
-      ctx.fillText('NEXT STEP', 800, 94);
-      
-      ctx.strokeStyle = '#e2e8f0';
-      ctx.beginPath();
-      ctx.moveTo(0, 110);
-      ctx.lineTo(canvas.width, 110);
-      ctx.stroke();
-      
-      let y = 140;
-      rows.forEach((row, index) => {
-        const clientName = row.querySelector('.client-name').textContent;
-        const clientSubtitle = row.querySelector('.rt-client-subtitle').textContent;
-        const workType = row.cells[1].textContent;
-        const state = row.cells[2].textContent;
-        const whyMatters = row.querySelector('.matters-text').textContent;
-        const nextStep = row.querySelector('.rt-next-step').textContent;
-        
-        if (index % 2 === 1) {
-          ctx.fillStyle = '#fcfcfd';
-          ctx.fillRect(0, y - 30, canvas.width, 60);
-        }
-        
-        ctx.fillStyle = '#0f172a';
-        ctx.font = 'bold 13px Inter, sans-serif';
-        ctx.fillText(clientName, 30, y - 6);
-        ctx.fillStyle = '#64748b';
-        ctx.font = '11px Inter, sans-serif';
-        ctx.fillText(clientSubtitle, 30, y + 12);
-        
-        ctx.fillStyle = '#334155';
-        ctx.font = '13px Inter, sans-serif';
-        ctx.fillText(workType, 240, y + 3);
-        
-        let pillColor = '#e2e8f0';
-        let textColor = '#475569';
-        if (state.includes('action') || state.includes('risk') || state.includes('Deadline')) {
-          pillColor = '#ffe4e6';
-          textColor = '#be123c';
-        } else if (state.includes('reply') || state.includes('Waiting')) {
-          pillColor = '#dbeafe';
-          textColor = '#2563eb';
-        }
-        ctx.fillStyle = pillColor;
-        ctx.beginPath();
-        ctx.roundRect(430, y - 12, 110, 24, 6);
-        ctx.fill();
-        ctx.fillStyle = textColor;
-        ctx.font = 'bold 11px Inter, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText(state, 485, y + 4);
-        ctx.textAlign = 'left';
-        
-        ctx.fillStyle = '#334155';
-        ctx.font = '12px Inter, sans-serif';
-        let mattersSnippet = whyMatters;
-        if (mattersSnippet.length > 30) mattersSnippet = mattersSnippet.substring(0, 27) + '...';
-        ctx.fillText(mattersSnippet, 560, y + 3);
-        
-        ctx.fillStyle = '#0f172a';
-        ctx.font = '500 12px Inter, sans-serif';
-        let stepSnippet = nextStep;
-        if (stepSnippet.length > 25) stepSnippet = stepSnippet.substring(0, 22) + '...';
-        ctx.fillText(stepSnippet, 800, y + 3);
-        
-        ctx.strokeStyle = '#f1f5f9';
-        ctx.beginPath();
-        ctx.moveTo(0, y + 30);
-        ctx.lineTo(canvas.width, y + 30);
-        ctx.stroke();
-        
-        y += 60;
-      });
-      
-      ctx.fillStyle = '#f8fafc';
-      ctx.fillRect(0, canvas.height - 50, canvas.width, 50);
-      ctx.fillStyle = '#94a3b8';
-      ctx.font = '11px Inter, sans-serif';
-      ctx.fillText('Generated natively by redtomato workspace overlay for Gmail', 30, canvas.height - 20);
-      
-      const link = document.createElement('a');
-      link.download = 'redtomato-workspace-report.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-      
-      showToast('Downloaded Workspace snapshot!');
-    }
-
     function saveWorkspace() {
       showToast("Workspace Layout Saved Successfully!");
     }
@@ -2057,13 +2330,13 @@
     function resetWorkspace() {
       urgencySorted = false;
       clientSorted = false;
-      missingFirst = false;
       hideLow = false;
       focusToday = false;
+      currentWorkMode = 'important-today';
+      document.getElementById('work-mode-select').value = 'important-today';
 
       document.getElementById('btn-urgency').classList.remove('active');
       document.getElementById('btn-client').classList.remove('active');
-      document.getElementById('btn-missing').classList.remove('active');
       document.getElementById('btn-hidelow').classList.remove('active');
       document.getElementById('btn-focus').classList.remove('active');
       document.getElementById('ask-input').value = '';
@@ -2100,7 +2373,7 @@
       } else if (cmd.includes('hide') || cmd.includes('low')) {
         toggleHideLow();
       } else {
-        alert(`redtomato: Processing request "${input.value}"...`);
+        showToast(`Processing: "${input.value}"`);
       }
       input.value = '';
     }
@@ -2108,13 +2381,23 @@
     function renderRows() {
       const tbody = document.getElementById('table-rows');
       const rows = Array.from(tbody.querySelectorAll('tr'));
+      const allowedStates = modeFilters[currentWorkMode];
 
       let visibleCount = 0;
       rows.forEach(row => {
         const state = row.getAttribute('data-state');
         
         let visible = true;
+
+        // Work mode filter (Point 7)
+        if (allowedStates !== null && activeFilter === 'all') {
+          if (!allowedStates.includes(state)) visible = false;
+        }
+
+        // Manual state filter from left panel
         if (activeFilter !== 'all' && state !== activeFilter) visible = false;
+
+        // Bottom dock toggles
         if (hideLow && state === 'Low priority') visible = false;
         if (focusToday && state !== 'Needs action now' && state !== 'Follow-up due' && state !== 'Deadline risk') visible = false;
 
@@ -2140,7 +2423,6 @@
           'Waiting for reply': 3,
           'Review or decision needed': 4,
           'Attachment review': 5,
-          'Missing contact': 6,
           'Low priority': 7
         };
         sorted.sort((a, b) => {
@@ -2150,11 +2432,12 @@
         });
       }
 
-      if (missingFirst) {
+      // Unread-first mode
+      if (currentWorkMode === 'unread-first') {
         sorted.sort((a, b) => {
-          const aMissing = a.getAttribute('data-state') === 'Missing contact' ? 1 : 0;
-          const bMissing = b.getAttribute('data-state') === 'Missing contact' ? 1 : 0;
-          return bMissing - aMissing;
+          const aUnread = a.classList.contains('unread') ? 0 : 1;
+          const bUnread = b.classList.contains('unread') ? 0 : 1;
+          return aUnread - bUnread;
         });
       }
 
@@ -2164,6 +2447,13 @@
     function updateMapCounts() {
       const totalRows = document.querySelectorAll('#table-rows tr').length;
       document.getElementById('count-all').textContent = totalRows;
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast-banner');
+      toast.textContent = msg;
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 2000);
     }
   </script>
 </body>

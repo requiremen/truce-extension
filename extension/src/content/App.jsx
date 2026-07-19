@@ -7,7 +7,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { OverlayPanel } from './components/OverlayPanel.jsx';
 import { getAuthStatus, classifyEmails } from '../shared/api.js';
 import { DEFAULT_TEMPLATES } from '../shared/templates.js';
-import { STORAGE_KEYS, VIEW_MODES, DEFAULT_SETTINGS } from '../shared/constants.js';
+import { STORAGE_KEYS, VIEW_MODES, DEFAULT_SETTINGS, WORK_MODES } from '../shared/constants.js';
 
 export function App() {
   // Auth state
@@ -24,6 +24,7 @@ export function App() {
 
   // UI state
   const [viewMode, setViewMode] = useState(VIEW_MODES.TABLE);
+  const [workMode, setWorkMode] = useState('important-today');
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [currentQuery, setCurrentQuery] = useState('');
 
@@ -148,6 +149,8 @@ export function App() {
       error={error}
       viewMode={viewMode}
       onViewModeChange={handleViewModeChange}
+      workMode={workMode}
+      onWorkModeChange={setWorkMode}
       onSubmitQuery={handleSubmitQuery}
       currentQuery={currentQuery}
     />

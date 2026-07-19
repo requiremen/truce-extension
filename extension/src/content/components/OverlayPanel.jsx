@@ -7,7 +7,7 @@ import React, { useState, useMemo } from 'react';
 import { ResultsTable } from './ResultsTable.jsx';
 import { ResultsCards } from './ResultsCards.jsx';
 import { TemplateEditor } from './TemplateEditor.jsx';
-import { VIEW_MODES } from '../../shared/constants.js';
+import { VIEW_MODES, WORK_MODES } from '../../shared/constants.js';
 
 // SVG Icons
 const TomatoLogo = () => (
@@ -72,6 +72,8 @@ export function OverlayPanel({
   error,
   viewMode,
   onViewModeChange,
+  workMode,
+  onWorkModeChange,
   onSubmitQuery,
   currentQuery,
 }) {
@@ -121,6 +123,14 @@ export function OverlayPanel({
       return item;
     });
 
+    const currentMode = WORK_MODES[workMode];
+    if (currentMode && currentMode.allowedStates !== null && activeFilter === 'all') {
+      items = items.filter(item => {
+        const state = item.current_state || item.status;
+        return currentMode.allowedStates.includes(state);
+      });
+    }
+
     if (hideLowPriority) {
       items = items.filter(item => {
         const state = item.current_state || item.status;
@@ -135,8 +145,17 @@ export function OverlayPanel({
       });
     }
 
+    // Unread-first sort mode
+    if (workMode === 'unread-first') {
+      items.sort((a, b) => {
+        const aUnread = a.isUnread ? 0 : 1;
+        const bUnread = b.isUnread ? 0 : 1;
+        return aUnread - bUnread;
+      });
+    }
+
     return items;
-  }, [results, activeFilter, hideLowPriority, removedThreadIds, unreadOverrides]);
+  }, [results, activeFilter, hideLowPriority, removedThreadIds, unreadOverrides, workMode]);
 
   const handleRowAction = async (item, action) => {
     const threadId = item.threadId || item.messageId;
@@ -227,24 +246,47 @@ export function OverlayPanel({
             <TomatoLogo />
             <span className="rt-logo">redtomato</span>
           </div>
-          <div className="rt-mode-badge important" onClick={handleSignIn}>
-            <span className="indicator"></span>
-            {isAuthenticated ? 'Work Mode: Active' : 'Sign in to Gmail'}
-          </div>
+          {isAuthenticated ? (
+            <div className="rt-mode-dropdown-group">
+              <select 
+                className="rt-mode-select" 
+                value={workMode} 
+                onChange={(e) => onWorkModeChange(e.target.value)}
+              >
+                {Object.entries(WORK_MODES).map(([key, mode]) => (
+                  <option key={key} value={key}>{mode.label}</option>
+                ))}
+              </select>
+              <span className="rt-info-icon">ⓘ<span className="rt-tooltip">Choose a pre-built lens to filter and organise your inbox.</span></span>
+            </div>
+          ) : (
+            <div className="rt-mode-badge important" onClick={handleSignIn}>
+              <span className="indicator"></span>
+              Sign in to Gmail
+            </div>
+          )}
         </div>
 
         <div className="rt-workmode-prompt">
-          <span className="rt-prompt-label">Need a different work mode?</span>
-          <form className="rt-prompt-input-container" onSubmit={handleAskSubmit}>
-            <input
-              type="text"
-              placeholder="Describe the workspace you want to start with..."
+          <div className="rt-prompt-label-row">
+            <span className="rt-prompt-label">Need a different work mode?</span>
+            <span className="rt-info-icon">ⓘ<span className="rt-tooltip">Describe a custom starting mode in your own words.</span></span>
+          </div>
+          <form className="rt-prompt-card" onSubmit={handleAskSubmit}>
+            <textarea
+              placeholder="Organise this inbox around customer success conversations and flag any pending replies older than 48 hours."
               value={askText}
               onChange={(e) => setAskText(e.target.value)}
               disabled={isLoading}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleAskSubmit(e);
+                }
+              }}
             />
-            <button type="submit" className="rt-input-submit" style={{ background: 'none', border: 'none' }}>
-              <svg className="arrow" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+            <button type="submit" className="rt-prompt-submit-btn" disabled={isLoading} title="Apply custom work mode">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
             </button>
           </form>
         </div>
@@ -275,8 +317,9 @@ export function OverlayPanel({
             
             {/* Left Sidebar Panel: Workspace Map */}
             <div className="rt-map-panel">
-              <div className="rt-panel-title">
-                Work Map (by state)
+              <div className="rt-panel-title-row">
+                <div className="rt-panel-title">Work Map (by state)</div>
+                <span className="rt-info-icon">ⓘ<span className="rt-tooltip">Click a state to filter the table to only those items.</span></span>
               </div>
               
               <div className="rt-map-list">
@@ -479,23 +522,18 @@ export function OverlayPanel({
                       </div>
                       <div className="rt-source-subject">{selectedItem.subject || 'Correspondence details'}</div>
                       <div className="rt-source-snippet">{selectedItem.snippet || 'Email body content snippet...'}</div>
-                      {selectedItem.threadId && (
-                        <a href={`#inbox/${selectedItem.threadId}`} className="rt-source-link" onClick={() => {
-                          window.location.hash = `#inbox/${selectedItem.threadId}`;
-                        }}>
-                          Open in Gmail ↗
-                        </a>
+                      {selectedItem.attachment && (
+                        <div className="rt-source-attachment">📎 {selectedItem.attachment}</div>
                       )}
                     </div>
                   </div>
                 </div>
 
                 <div className="rt-detail-actions">
-                  <button className="rt-detail-btn primary" onClick={() => {
-                    if (selectedItem.threadId) window.location.hash = `#inbox/${selectedItem.threadId}`;
-                  }}>
-                    Open in Gmail ↗
-                  </button>
+                  <a className="rt-detail-btn primary" href={`https://mail.google.com/mail/u/0/#inbox/${selectedItem.threadId || ''}`} target="_blank" rel="noopener noreferrer">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{marginRight: 6}}><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                    Open in Gmail
+                  </a>
                   <button className="rt-detail-btn secondary" onClick={() => setSelectedItem(null)}>
                     Close
                   </button>
@@ -516,11 +554,12 @@ export function OverlayPanel({
               <button className="rt-control-btn" onClick={() => setIsEditorExpanded(!isEditorExpanded)}>
                 🛠 Template Settings
               </button>
+              <div className="rt-control-spacer"></div>
               <button className="rt-control-btn accent" onClick={() => {
                 setActiveFilter('all');
                 setHideLowPriority(false);
                 setSelectedItem(null);
-              }}>Reset</button>
+              }}>Reset workspace</button>
             </div>
 
             {/* Template Editor Drawer */}
@@ -532,8 +571,9 @@ export function OverlayPanel({
 
             {/* Change Workspace Prompt */}
             <form className="rt-ask-bar" onSubmit={handleAskSubmit}>
-              <div className="rt-ask-label">
-                <span>Ask redtomato to change this workspace</span>
+              <div className="rt-ask-label-row">
+                <div className="rt-ask-label">Ask RedTomato to change this workspace</div>
+                <span className="rt-info-icon">ⓘ<span className="rt-tooltip">Type a natural-language instruction to modify the current view.</span></span>
               </div>
               <div className="rt-ask-input-wrap">
                 <input
@@ -545,7 +585,7 @@ export function OverlayPanel({
                 />
               </div>
               <button type="submit" className="rt-submit-btn" disabled={isLoading}>
-                <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
               </button>
             </form>
           </div>
