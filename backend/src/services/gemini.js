@@ -6,9 +6,19 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import { buildResponseSchema, buildSystemPrompt } from '../utils/schemaBuilder.js';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Lazy initialization — read env vars at call time, not import time
+let _genAI = null;
+function getGenAI() {
+  if (!_genAI) {
+    _genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  }
+  return _genAI;
+}
 
-const MODEL_NAME = process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+function getModelName() {
+  return process.env.GEMINI_MODEL || 'gemini-2.0-flash';
+}
+
 const BATCH_SIZE = parseInt(process.env.GEMINI_BATCH_SIZE || '25', 10);
 
 /**
@@ -19,7 +29,7 @@ const BATCH_SIZE = parseInt(process.env.GEMINI_BATCH_SIZE || '25', 10);
  * @returns {Array} Classified email objects matching template schema
  */
 async function classifyBatch(emailSummaries, template, userQuery) {
-  const model = genAI.getGenerativeModel({ model: MODEL_NAME });
+  const model = getGenAI().getGenerativeModel({ model: getModelName() });
 
   const systemPrompt = buildSystemPrompt(template, userQuery);
   const responseSchema = buildResponseSchema(template);

@@ -3,6 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import fetch, { Headers, Request, Response } from 'node-fetch';
 
+// Load .env FIRST — before any module that reads process.env
+dotenv.config();
+
 // Polyfill global fetch for Node 16 (required for Gemini SDK and Gmail API)
 if (!globalThis.fetch) {
   globalThis.fetch = fetch;
@@ -12,8 +15,6 @@ if (!globalThis.fetch) {
 }
 
 import { classifyRouter } from './routes/classify.js';
-
-dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
