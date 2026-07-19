@@ -27,6 +27,7 @@ export function App() {
   const [workMode, setWorkMode] = useState('important-today');
   const [isPanelOpen, setIsPanelOpen] = useState(true);
   const [currentQuery, setCurrentQuery] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
 
   // Check auth on mount
   useEffect(() => {
@@ -88,6 +89,7 @@ export function App() {
       onComplete: (data) => {
         setIsLoading(false);
         setProgress(null);
+        setHasSearched(true);
       },
       onError: (data) => {
         setIsLoading(false);
@@ -153,6 +155,7 @@ export function App() {
       onWorkModeChange={setWorkMode}
       onSubmitQuery={handleSubmitQuery}
       currentQuery={currentQuery}
+      hasSearched={hasSearched}
     />
   );
 }

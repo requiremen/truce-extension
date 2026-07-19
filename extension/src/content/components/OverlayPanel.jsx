@@ -76,6 +76,7 @@ export function OverlayPanel({
   onWorkModeChange,
   onSubmitQuery,
   currentQuery,
+  hasSearched
 }) {
   const [activeFilter, setActiveFilter] = useState('all');
   const [askText, setAskText] = useState('');
@@ -458,6 +459,12 @@ export function OverlayPanel({
                       onCardClick={(item) => setSelectedItem(item)}
                     />
                   )
+                ) : hasSearched ? (
+                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 40, color: '#64748b', textAlign: 'center' }}>
+                    <div style={{ fontSize: 32, marginBottom: 8 }}>🕵️‍♂️</div>
+                    <span style={{ fontWeight: 500 }}>Zero matches found!</span>
+                    <span style={{ fontSize: 13 }}>The AI scanned your inbox but couldn't find any emails that fit this mode. Try a different mode or a broader prompt!</span>
+                  </div>
                 ) : (
                   <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 12, padding: 40, color: '#94a3b8' }}>
                     <SparkleIcon />
