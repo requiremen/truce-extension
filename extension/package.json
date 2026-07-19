@@ -4,8 +4,8 @@
   "description": "MailSort AI — AI-powered Gmail sorting overlay",
   "type": "module",
   "scripts": {
-    "dev": "vite build --watch",
-    "build": "vite build",
+    "dev": "node build.js && echo 'Watching not supported in this script yet, please run build manually'",
+    "build": "node build.js",
     "lint": "eslint src/"
   },
   "dependencies": {
