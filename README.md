@@ -13,20 +13,20 @@ extensionn/
 
 ## Prerequisites
 
-- Node.js 18+
+- Node.js 16+ (18+ recommended)
 - A Google Cloud project with:
   - Gmail API enabled
   - OAuth 2.0 Client ID (type: Chrome Extension)
-- A Gemini API key
+- A Gemini API key (Get one from [Google AI Studio](https://aistudio.google.com/))
 
-## Quick Start
+## Quick Start (For Co-founders / Testers)
 
 ### 1. Backend
 
 ```bash
 cd backend
 cp .env.example .env
-# Edit .env with your Gemini API key
+# Edit .env and paste your Gemini API key inside!
 npm install
 npm run dev
 ```
@@ -34,6 +34,8 @@ npm run dev
 The backend runs on `http://localhost:3001`.
 
 ### 2. Extension
+
+If you just cloned the repository, you can build the extension using:
 
 ```bash
 cd extension
@@ -43,26 +45,28 @@ npm run build
 
 Then load the extension in Chrome:
 1. Go to `chrome://extensions`
-2. Enable "Developer mode"
-3. Click "Load unpacked"
-4. Select the `extension/dist` folder
+2. Enable "Developer mode" (top right corner)
+3. Click "Load unpacked" (top left corner)
+4. Select the `extension/dist` folder from this repository.
 
-### 3. Google Cloud Setup
+### 3. Google Account Access (IMPORTANT)
 
+If you are a co-founder or tester cloning this repository, you **cannot** sign in to the extension until the repository owner adds your email address as a **"Test User"** in their Google Cloud Console.
+
+**For the repository owner:**
 1. Go to [Google Cloud Console](https://console.cloud.google.com/)
-2. Create a project → Enable the **Gmail API**
-3. Go to **APIs & Services → Credentials**
-4. Create an **OAuth 2.0 Client ID** (type: **Chrome Extension**)
-5. Enter your extension ID (shown at `chrome://extensions`)
-6. Copy the Client ID into `extension/public/manifest.json` → `oauth2.client_id`
+2. Navigate to **APIs & Services → OAuth consent screen**
+3. Under "Test users", click **Add Users** and add your co-founder's Gmail address.
+
+If you don't do this, testers will get a **403 access_denied** error when trying to click "Sign in to Gmail".
 
 ## Development
 
 ```bash
-# Extension (watch mode)
+# Extension (builds changes continuously)
 cd extension && npm run dev
 
-# Backend (watch mode)
+# Backend (restarts on file changes)
 cd backend && npm run dev
 ```
 
